@@ -4,7 +4,7 @@ import subprocess as sp
 
 def main():
     toInstall = "bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector python cronie"
-    toInstall += " gcc make pacman cmake fakeroot" # this instead of base-devel
+    toInstall += " gcc make pacman cmake fakeroot go" # this instead of base-devel
     addInstall = []
     commands = str()
     raid = False
@@ -38,7 +38,11 @@ def main():
         commands += "echo 'permit persist :wheel' > /etc/doas.conf; echo 'yay --sudo doas --save' >> phase2.sh;"
 
     if pmt("Are you using mdadm/raid?", "mdadm", False):
-        commands += "echo 'permit :wheel' > /etc/doas.conf; echo 'yay --sudo doas --save' >> phase2.sh;"
+        commands += 'echo \'permit :wheel\' > /etc/doas.conf; echo \'yay --sudo doas --save\' >> phase2.sh; \
+        mdadm --detail --scan >> /etc/mdadm.conf;\
+        sed -i \'s/\(?<=^HOOKS\)*.\(filesystems\)/ mdadm_udev filesystems/\' /etc/mkinitcpio.conf;\
+        sed -i \'s/\(?<=^GRUB_PRELOAD_MODULES\)*.\(part_gpt\)/"part_gpt mdraid09 mdraid1x/\' /etc/default/grub;\
+        mkinitcpio -P;'
 
     pmt("Are you going to use nfts?", "ntfs-3g")
 
