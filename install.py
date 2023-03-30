@@ -4,7 +4,6 @@ import subprocess as sp
 
 def main():
     toInstall = "bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector python cronie"
-    sp.run('systemctl enable cronie'.split())
     toInstall += " gcc make pacman cmake fakeroot" # this instead of base-devel
     addInstall = []
     commands = str()
@@ -12,10 +11,11 @@ def main():
     sudo = True
 
     def pmt(p, s = str(), defaultY = True, b_install = False):
-        inp = input(p.capitalize() + " (Y/n)").lower()
         if defaultY:
+            inp = input(p + " (Y/n)").lower()
             b = 'n' not in inp
-        else: 
+        else:
+            inp = input(p + " (y/N)").lower()
             b = 'y' in inp
 
         if b:
@@ -46,7 +46,7 @@ def main():
     pmt("Wifi?", "wpa_supplicant")
     pmt("Laptop?", "acpi acpi_call tlp acpid")
 
-    if not pmt("Would you like to install more minimal base-devel + my selection? (make, gcc, pacman, cmake already included prior) (Y/n)", "archlinux-keyring gzip"):
+    if not pmt("Would you like to install more minimal base-devel + my selection? (make, gcc, pacman, cmake already included prior)", "archlinux-keyring gzip"):
         pmt("Then, would you like to install all base-devel?", "archlinux-keyring fakeroot file findutils flex gettext groff gzip libtool m4 patch pkgconf texinfo which")
 
     if not pmt("My Selection of tools?", "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python-pip cronie openssh htop sensors"):
@@ -103,12 +103,13 @@ def main():
         elif 'y' in inp:
             break
 
+    sp.run(runString.split())
+    sp.run('systemctl enable cronie'.split())
     if pmt("Detect other OSes?"):
         sp.run(
             'echo "GRUB_DISABLE_OS_PROBER=false" >> /mnt/etc/default/grub'
             .split())
 
-    sp.run(runString.split())
     sp.run('cd pwd; cp -r ../arch-main-init /mnt/root/arch-main-init'.split())
     sp.run('bash /root/arch-main-init/phase1.sh'.split())
     # Chrooted
