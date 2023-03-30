@@ -32,26 +32,28 @@ def main():
 
     if input("Doas or Sudo (d/s)").lower() in 'sS':
         toInstall += " sudo"
+        commands += "sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers;"
     else:
         toInstall += " doas"
+        commands += "echo 'permit persist :wheel' > /etc/doas.conf; echo 'yay --sudo doas --save' >> phase2.sh;"
 
-    if pmt("Are you using mdadm/raid?", "mdadm"):
-        raid = True
+    if pmt("Are you using mdadm/raid?", "mdadm", False):
+        commands += "echo 'permit :wheel' > /etc/doas.conf; echo 'yay --sudo doas --save' >> phase2.sh;"
 
     pmt("Are you going to use nfts?", "ntfs-3g")
 
     pmt("Virtual machines?", "vde2 virt-manager qemu-base qemu-arch-extra edk2-ovmf bridge-utils")
 
-    pmt("Bluetooth?", "bluz bluez-utils")
+    pmt("Bluetooth?", "bluez bluez-utils")
     pmt("Wifi?", "wpa_supplicant")
     pmt("Laptop?", "acpi acpi_call tlp acpid")
 
     if not pmt("Would you like to install more minimal base-devel + my selection? (make, gcc, pacman, cmake already included prior)", "archlinux-keyring gzip"):
         pmt("Then, would you like to install all base-devel?", "archlinux-keyring fakeroot file findutils flex gettext groff gzip libtool m4 patch pkgconf texinfo which")
 
-    if not pmt("My Selection of tools?", "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python-pip cronie openssh htop sensors"):
+    if not pmt("My Selection of tools?", "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python-pip cronie openssh htop"):
         if pmt("Would you like to select some instead?"):
-            for s in "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python-pip openssh htop sensors".split():
+            for s in "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python-pip openssh htop".split():
                 pmt(s)
 
     if pmt("Firewall?"):
@@ -59,13 +61,16 @@ def main():
             pmt("iptables-ntf + firewalld?", "iptables-nft ipset firewalld")
 
     if pmt("Do you want a desktop?)", "xorg xorg-xinit pulseaudio alsa-utils pipewire pipewire-jack piper"):
-        if pmt("KDE+Xorg?", "sddm plasma"):
+        if pmt("KDE+Xorg?", "sddm plasma-desktop"):
             commands += " systemctl enable sddm;"
+            if pmt("Plasma Minimal (plasma-desktop already done)?", "bluedevil drkonqi discover kde-gtk-config"):
             pmt("Plasma Applications?", " kde-applications")
         else:
             print("Good luck on that.")
-        
-        for s in ["discord", "element-desktop", "torbrowser-launcher", "vlc", "obs-studio", "xdg-utils", "kdenlive"]:
+        pmt("Basic apps and tools for desktop?", "xdg-desktop-menu xdg-icon-resource xdg-open xdg-settings xdg-screensaver terminator")
+
+
+        for s in "discord element-desktop torbrowser-launcher vlc obs-studio kdenlive khotkeys kpipewire kscreen kscreenlocker ksshaskpass plasma-browser-integration plasma-disks libkscreen plasma-firewall plasma-nm plasma-pa plasma-systemmonitor plasma-vault plasma-workspace plasma-workspace-wallpapers powerdevil sddm-kcm systemsettings".split():
             pmt(s, "", True, True)
 
     if pmt("ZSH for humans?", "zsh"):
@@ -79,7 +84,7 @@ def main():
     for s in ["cups", "flatpak"]:
         pmt(s, "", True, True)
 
-    if pmt("Is this a server?"):
+    if pmt("Is this a server?", "", False):
         pmt("Network server utils? - installdnsmasq dnsutils inetutils nss-mdns", "dnsmasq dnsutils inetutils nss-mdns")
 
     # Hardware
@@ -109,34 +114,11 @@ def main():
         sp.run(
             'echo "GRUB_DISABLE_OS_PROBER=false" >> /mnt/etc/default/grub'
             .split())
-
-    sp.run('cd pwd; cp -r ../arch-main-init /mnt/root/arch-main-init'.split())
+    sp.run('cp -r /home/root/arch-main-init /mnt/root/arch-main-init'.split())
+    f = open("/mnt/root/arch-main-init/phase2.sh", "a")
+    f.write(commands)
+    f.close()
     sp.run('bash /root/arch-main-init/phase1.sh'.split())
     # Chrooted
-    sp.run('cd /root/arch-main-init'.split())
-    sp.run('pacman -Syuu'.split())
-
-
-
-    if sudo:
-        sp.run(
-            'sed -i \'s/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/\' /etc/sudoers'.split())
-    else:
-        sp.run(
-            'echo "permit :wheel" > /etc/doas.conf; echo "yay --sudo doas --save" >> phase2.sh'.split())
-
-
-    if raid:
-        sp.run(
-            'mdadm --detail --scan >> /etc/mdadm.conf\
-            sed -i \'s/\(?<=^HOOKS\)*.\(filesystems\)/ mdadm_udev filesystems/\' /etc/mkinitcpio.conf\
-            sed -i \'s/\(?<=^GRUB_PRELOAD_MODULES\)*.\(part_gpt\)/"part_gpt mdraid09 mdraid1x/\' /etc/default/grub\
-            mkinitcpio -P'.split())
-
-    for s in commands:
-        runString += s
-    sp.run(runString.split())
-
-    print("time to reboot")
 
 main()
