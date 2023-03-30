@@ -3,7 +3,8 @@
 import subprocess as sp
 
 def main():
-    toInstall = "bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector"
+    toInstall = "bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector python cronie"
+    sp.run('systemctl enable cronie'.split())
     toInstall += " gcc make pacman cmake fakeroot" # this instead of base-devel
     addInstall = []
     commands = str()
@@ -26,8 +27,7 @@ def main():
             return True
 
     sp.run(
-        ('echo "' + input("What would you like your hostname to be?") + '" > /mnt/etc/hostname')
-            .split())
+        ('echo "' + input("What would you like your hostname to be?") + '" > /mnt/etc/hostname').split())
 
 
     if input("Doas or Sudo (d/s)").lower() in 'sS':
@@ -49,9 +49,9 @@ def main():
     if not pmt("Would you like to install more minimal base-devel + my selection? (make, gcc, pacman, cmake already included prior) (Y/n)", "archlinux-keyring gzip"):
         pmt("Then, would you like to install all base-devel?", "archlinux-keyring fakeroot file findutils flex gettext groff gzip libtool m4 patch pkgconf texinfo which")
 
-    if not pmt("My Selection of tools?", "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python python-pip cronie openssh htop sensors"):
+    if not pmt("My Selection of tools?", "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python-pip cronie openssh htop sensors"):
         if pmt("Would you like to select some instead?"):
-            for s in "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python python-pip cronie openssh htop sensors".split():
+            for s in "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python-pip openssh htop sensors".split():
                 pmt(s)
 
     if pmt("Firewall?"):
@@ -87,39 +87,55 @@ def main():
         toInstall += " intel-ucode"
     if "AuthenticAMD" in open("/proc/cpuinfo", "r").read():
         toInstall += " amd-ucode"
-    if "nvidia" in open("/proc/bus/pci/devices", "r").read():
+    if pmt("Nvidia?"):
         toInstall += " nvidia nvidia-utils"
+    elif pmt("AMD GPU?"):
+        toInstall += " mesa AMDGPU"
 
     for s in addInstall:
         toInstall += s
     runString = "pacstrap -K /mnt " + toInstall
     print(runString)
-    sp.run(runString.split())
-    sp.run('bash /root/arch-main-init/phase1.sh'.split())
+    while True:
+        inp = input("Continue with this? (y/n)").lower()
+        if 'n' in inp:
+            exit()
+        elif 'y' in inp:
+            break
 
-    if input("OS-PROBER? (detect other OSes) (y/n)").lower() in 'yY':
+    if pmt("Detect other OSes?"):
         sp.run(
-            'echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub'
-                .split())
+            'echo "GRUB_DISABLE_OS_PROBER=false" >> /mnt/etc/default/grub'
+            .split())
 
-    sp.run(
-       'sed -i \'s/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/\' /etc/sudoers'
-            .split())
-    sp.run(
-       'echo "permit :wheel" > /etc/doas.conf'
-            .split())
+    sp.run(runString.split())
+    sp.run('cd pwd; cp -r ../arch-main-init /mnt/root/arch-main-init'.split())
+    sp.run('bash /root/arch-main-init/phase1.sh'.split())
+    # Chrooted
+    sp.run('cd /root/arch-main-init'.split())
+    sp.run('pacman -Syuu'.split())
+
+
+
+    if sudo:
+        sp.run(
+            'sed -i \'s/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/\' /etc/sudoers'.split())
+    else:
+        sp.run(
+            'echo "permit :wheel" > /etc/doas.conf; echo "yay --sudo doas --save" >> phase2.sh'.split())
+
 
     if raid:
         sp.run(
             'mdadm --detail --scan >> /etc/mdadm.conf\
             sed -i \'s/\(?<=^HOOKS\)*.\(filesystems\)/ mdadm_udev filesystems/\' /etc/mkinitcpio.conf\
             sed -i \'s/\(?<=^GRUB_PRELOAD_MODULES\)*.\(part_gpt\)/"part_gpt mdraid09 mdraid1x/\' /etc/default/grub\
-            mkinitcpio -P'
-                .split())
+            mkinitcpio -P'.split())
 
     for s in commands:
         runString += s
     sp.run(runString.split())
 
     print("time to reboot")
+
 main()
