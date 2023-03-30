@@ -26,7 +26,7 @@ set mouse=a" >> ~/.vimrc
 
 echo "127.0.0.1 localhost" >> /etc/hosts
 echo "::1       localhost" >> /etc/hosts
-reflector -a 6 --sort rate --save /etc/pacman.d/mirrorlist
+reflector -c US -a 6 --sort rate --save /etc/pacman.d/mirrorlist
 pacman -S sudo openssh openvpn
 ssh-keygen
 ssh-keygen -t ed25519
@@ -35,7 +35,7 @@ ssh-keygen -t ed25519
 pacman -S nvidia nvidia-utils nvidia-settings
 
 # Optionals
-pacman -S discord vnstat wget curl lynx xdg-utils xdg-user-dirs git vim obs-studio vlc kdenlive tmux htop
+pacman -S zsh discord vnstat wget curl lynx xdg-utils xdg-user-dirs git vim obs-studio vlc kdenlive tmux htop
 
 # Accessory stuff
 pacman -S pulseaudio cups alsa-utils pipewire pipewire-alsa pipewire-pulse pipewire-jack piper 
@@ -50,7 +50,7 @@ systemctl enable sddm
 # pacman -S installdnsmasq dnsutils inetutils nss-mdns
 
 # Additional Optional
-pacman -S iptables-nft ipset firewalld openbsd-netcat dosfstools mtools flatpak
+pacman -S iptables-nft ipset firewalld openbsd-netcat dosfstools flatpak
 
 useradd -mG wheel user
 echo '%wheel ALL=(ALL:ALL) ALL' >> /etc/sudoers

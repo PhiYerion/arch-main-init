@@ -14,6 +14,15 @@ flatpak --user install flathub com.valvesoftware.Steam
 flatpak run com.valvesoftware.Steam
 
 # MISC
+## nerd-fonts takes a very long time to download
+## git clone https://github.com/ryanoasis/nerd-fonts.git
+## ./nerd-fonts/install.sh
+if command -v curl >/dev/null 2>&1; then
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)"
+else
+  sh -c "$(wget -O- https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)"
+fi
+chsh -s /bin/zsh
 sudo pacman -S element-desktop keepassxc monero tor
 yay -S tor-browser
 yay -S ckb-next
