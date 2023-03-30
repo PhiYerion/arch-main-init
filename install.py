@@ -1,12 +1,10 @@
 #!/bin/python
 
 import subprocess as sp
-import numpy as np
 
 def main():
-    pwd = sp.run(['pwd'], capture_output=True)
     toInstall = "bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector"
-    toInstall += "gcc make pacman cmake fakeroot" # this instead of base-devel
+    toInstall += " gcc make pacman cmake fakeroot" # this instead of base-devel
     addInstall = []
     commands = str()
     raid = False
@@ -16,14 +14,14 @@ def main():
         inp = input(p.capitalize() + " (Y/n)").lower()
         if defaultY:
             b = 'n' not in inp
-        if defaultN: 
+        else: 
             b = 'y' in inp
 
         if b:
             if b_install:
                 addInstall.append(" " + p)
             else:
-                if len(s) > 0                   # jank
+                if len(s) > 0:                   # jank
                     addInstall.append(" " + s)
             return True
 
@@ -33,38 +31,42 @@ def main():
 
 
     if input("Doas or Sudo (d/s)").lower() in 'sS':
-        toInstall += "sudo"
+        toInstall += " sudo"
     else:
-        toInstall += "doas"
+        toInstall += " doas"
 
     if pmt("Are you using mdadm/raid?", "mdadm"):
         raid = True
 
     pmt("Are you going to use nfts?", "ntfs-3g")
 
-    pmt("Virtual machines?", "vde2 virt-manager qemu qemu-arch-extra edk2-ovmf")
+    pmt("Virtual machines?", "vde2 virt-manager qemu-base qemu-arch-extra edk2-ovmf bridge-utils")
+
+    pmt("Bluetooth?", "bluz bluez-utils")
+    pmt("Wifi?", "wpa_supplicant")
+    pmt("Laptop?", "acpi acpi_call tlp acpid")
 
     if not pmt("Would you like to install more minimal base-devel + my selection? (make, gcc, pacman, cmake already included prior) (Y/n)", "archlinux-keyring gzip"):
         pmt("Then, would you like to install all base-devel?", "archlinux-keyring fakeroot file findutils flex gettext groff gzip libtool m4 patch pkgconf texinfo which")
 
-    if not pmt("My Selection of tools?", "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python python-pip cronie openssh"):
+    if not pmt("My Selection of tools?", "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python python-pip cronie openssh htop sensors"):
         if pmt("Would you like to select some instead?"):
-            for s in "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python python-pip cronie openssh".split():
+            for s in "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python python-pip cronie openssh htop sensors".split():
                 pmt(s)
 
-    pmt("Firewall?"):
+    if pmt("Firewall?"):
         if not pmt("UFW? (other option is iptables)", "ufw"):
             pmt("iptables-ntf + firewalld?", "iptables-nft ipset firewalld")
 
     if pmt("Do you want a desktop?)", "xorg xorg-xinit pulseaudio alsa-utils pipewire pipewire-jack piper"):
         if pmt("KDE+Xorg?", "sddm plasma"):
             commands += " systemctl enable sddm;"
-            if pmt("Plasma Applications?", " kde-applications")
+            pmt("Plasma Applications?", " kde-applications")
         else:
             print("Good luck on that.")
         
         for s in ["discord", "element-desktop", "torbrowser-launcher", "vlc", "obs-studio", "xdg-utils", "kdenlive"]:
-            pmt(s, True, True)
+            pmt(s, "", True, True)
 
     if pmt("ZSH for humans?", "zsh"):
         s = str()
@@ -75,40 +77,37 @@ def main():
         commands += s
 
     for s in ["cups", "flatpak"]:
-        pmt(s, True, True)
+        pmt(s, "", True, True)
 
-    pmt("Is this a server?"):
-        pmt("Network server utils? - installdnsmasq dnsutils inetutils nss-mdns", "dnsmasq dnsutils inetutils nss-mdns"
+    if pmt("Is this a server?"):
+        pmt("Network server utils? - installdnsmasq dnsutils inetutils nss-mdns", "dnsmasq dnsutils inetutils nss-mdns")
 
     # Hardware
     if "GenuineIntel" in open("/proc/cpuinfo", "r").read():
-        toInstall += "intel-ucode"
+        toInstall += " intel-ucode"
     if "AuthenticAMD" in open("/proc/cpuinfo", "r").read():
-        toInstall += "amd-ucode"
+        toInstall += " amd-ucode"
     if "nvidia" in open("/proc/bus/pci/devices", "r").read():
-        toInstall += "nvidia nvidia-utils"
+        toInstall += " nvidia nvidia-utils"
 
     for s in addInstall:
         toInstall += s
     runString = "pacstrap -K /mnt " + toInstall
+    print(runString)
     sp.run(runString.split())
-    sp.run(['cd', pwd])
-    sp.run(['./phase1.sh'])
-    sp.run(['cd', pwd])
+    sp.run('bash /root/arch-main-init/phase1.sh'.split())
 
-    if input("OS-PROBER? (detect other OSes) (y/n)").lower() in 'yY'
+    if input("OS-PROBER? (detect other OSes) (y/n)").lower() in 'yY':
         sp.run(
             'echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub'
                 .split())
 
-    if sudo:
-        sp.run(
-            'sed -i \'s/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/\' /etc/sudoers'
-                .split())
-    else:
-        sp.run(
-            'echo "permit :wheel" > /etc/doas.conf'
-                .split())
+    sp.run(
+       'sed -i \'s/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/\' /etc/sudoers'
+            .split())
+    sp.run(
+       'echo "permit :wheel" > /etc/doas.conf'
+            .split())
 
     if raid:
         sp.run(
@@ -123,5 +122,4 @@ def main():
     sp.run(runString.split())
 
     print("time to reboot")
-
 main()
