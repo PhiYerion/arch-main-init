@@ -26,8 +26,7 @@ def main():
                     addInstall.append(" " + s)
             return True
 
-    sp.run(
-        ('echo "' + input("What would you like your hostname to be?") + '" > /mnt/etc/hostname').split())
+    commands += 'echo "' + input("What would you like your hostname to be?") + '" > /mnt/etc/hostname'
 
 
     if input("Doas or Sudo (d/s)").lower() in 'sS':
@@ -71,7 +70,7 @@ def main():
             pmt("Plasma Applications?", " kde-applications")
         else:
             print("Good luck on that.")
-        pmt("Basic apps and tools for desktop?", "xdg-desktop-menu xdg-icon-resource xdg-open xdg-settings xdg-screensaver terminator")
+        pmt("Basic apps and tools for desktop?", "xdg-utils")
 
 
         for s in "discord element-desktop torbrowser-launcher vlc obs-studio kdenlive".split():
@@ -115,10 +114,8 @@ def main():
     sp.run(runString.split())
     sp.run('systemctl enable cronie'.split())
     if pmt("Detect other OSes?"):
-        sp.run(
-            'echo "GRUB_DISABLE_OS_PROBER=false" >> /mnt/etc/default/grub'
-            .split())
-    commands += 'cp -r /root/arch-main-init /mnt/root/arch-main-init;'
+        commands += 'echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub'
+    sp.run('cp -r /root/arch-main-init /mnt/root/arch-main-init'.split())
     f = open("/mnt/root/arch-main-init/phase2.sh", "a")
     f.write(commands)
     f.close()
