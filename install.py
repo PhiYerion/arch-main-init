@@ -38,8 +38,7 @@ def main():
         commands += "echo 'permit persist :wheel' > /etc/doas.conf; echo 'yay --sudo doas --save' >> phase2.sh;"
 
     if pmt("Are you using mdadm/raid?", "mdadm", False):
-        commands += 'echo \'permit :wheel\' > /etc/doas.conf; echo \'yay --sudo doas --save\' >> phase2.sh; \
-        mdadm --detail --scan >> /etc/mdadm.conf;\
+        commands += 'mdadm --detail --scan >> /etc/mdadm.conf;\
         sed -i \'s/\(?<=^HOOKS\)*.\(filesystems\)/ mdadm_udev filesystems/\' /etc/mkinitcpio.conf;\
         sed -i \'s/\(?<=^GRUB_PRELOAD_MODULES\)*.\(part_gpt\)/"part_gpt mdraid09 mdraid1x/\' /etc/default/grub;\
         mkinitcpio -P;'
@@ -67,14 +66,15 @@ def main():
     if pmt("Do you want a desktop?)", "xorg xorg-xinit pulseaudio alsa-utils pipewire pipewire-jack piper"):
         if pmt("KDE+Xorg?", "sddm plasma-desktop"):
             commands += " systemctl enable sddm;"
-            if pmt("Plasma Minimal (plasma-desktop already done)?", "bluedevil drkonqi discover kde-gtk-config"):
+            if not pmt("Plasma Minimal (plasma-desktop already done)?", "bluedevil drkonqi discover kde-gtk-config khotkeys kpipewire kscreen kscreenlocker ksshaskpass plasma-browser-integration plasma-disks libkscreen plasma-firewall plasma-nm plasma-pa plasma-systemmonitor plasma-vault plasma-workspace plasma-workspace-wallpapers powerdevil sddm-kcm systemsettings"):
+                pmt("Plasma group?", "plasma")
             pmt("Plasma Applications?", " kde-applications")
         else:
             print("Good luck on that.")
         pmt("Basic apps and tools for desktop?", "xdg-desktop-menu xdg-icon-resource xdg-open xdg-settings xdg-screensaver terminator")
 
 
-        for s in "discord element-desktop torbrowser-launcher vlc obs-studio kdenlive khotkeys kpipewire kscreen kscreenlocker ksshaskpass plasma-browser-integration plasma-disks libkscreen plasma-firewall plasma-nm plasma-pa plasma-systemmonitor plasma-vault plasma-workspace plasma-workspace-wallpapers powerdevil sddm-kcm systemsettings".split():
+        for s in "discord element-desktop torbrowser-launcher vlc obs-studio kdenlive".split():
             pmt(s, "", True, True)
 
     if pmt("ZSH for humans?", "zsh"):
@@ -118,7 +118,7 @@ def main():
         sp.run(
             'echo "GRUB_DISABLE_OS_PROBER=false" >> /mnt/etc/default/grub'
             .split())
-    sp.run('cp -r /home/root/arch-main-init /mnt/root/arch-main-init'.split())
+    sp.run('cp -r /root/arch-main-init /mnt/root/arch-main-init'.split())
     f = open("/mnt/root/arch-main-init/phase2.sh", "a")
     f.write(commands)
     f.close()
