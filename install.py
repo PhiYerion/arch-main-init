@@ -118,7 +118,7 @@ def main():
         sp.run(
             'echo "GRUB_DISABLE_OS_PROBER=false" >> /mnt/etc/default/grub'
             .split())
-    sp.run('cp -r /root/arch-main-init /mnt/root/arch-main-init'.split())
+    commands += 'cp -r /root/arch-main-init /mnt/root/arch-main-init;'
     f = open("/mnt/root/arch-main-init/phase2.sh", "a")
     f.write(commands)
     f.close()
