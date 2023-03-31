@@ -19,6 +19,10 @@ def main():
                     addInstall.append(" " + s)
             return True
 
+    def quicksp(fullString):
+        for line in fullString.split(";"):
+            sp.run(line.split())
+
     if pmt("Games/Emulation? (Wine, proton, steam, lutris)"):
         f = open("/etc/pacman.conf", "a")
         f.write('[multilib]\nInclude = /etc/pacman.d/mirrorlist')
@@ -32,12 +36,14 @@ def main():
             if pmt('display?'):
                 sp.run('pacman -S xf86-video-amdgpu'.split())
         if pmt("Steam?"):
-            sp.run('pacman -S flatpak;\
+            quicksp('pacman -S flatpak;\
             flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo;\
             flatpak --user install flathub com.valvesoftware.Steam;\
-            flatpak run com.valvesoftware.Steam'.split())
+            flatpak run com.valvesoftware.Steam')
         if pmt("Lutris?"):
             sp.run('flatpak install flathub net.lutris.Lutris'.split())
 
     for s in 'ckb-next protonvpn-cli protonvpn google-chrome'.split():
         pmt(s, "", True, True)
+
+main()
