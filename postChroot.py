@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/python
 
 import subprocess as sp
 import os.path

@@ -38,5 +38,6 @@ set mouse=a" >> ~/.vimrc
 
 runuser user -c "git clone https://aur.archlinux.org/yay.git /home/user/yay"
 cd /home/user/yay
-runuser user -c "makepkg -si"
+runuser user -c "makepkg -s"
+pacman -U /home/user/yay/yay*.zst
 cd /root/arch-main-init

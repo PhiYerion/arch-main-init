@@ -26,15 +26,15 @@ def main():
                     addInstall.append(" " + s)
             return True
 
-    commands += 'echo "' + input("What would you like your hostname to be?") + '" > /mnt/etc/hostname'
+    commands += 'echo "' + input("What would you like your hostname to be?") + '" > /mnt/etc/hostname;  '
 
 
     if input("Doas or Sudo (d/s)").lower() in 'sS':
-        toInstall += " sudo"
         commands += "sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers;"
+        toInstall += " sudo"
     else:
         toInstall += " doas"
-        commands += "echo 'permit persist :wheel' > /etc/doas.conf; echo 'yay --sudo doas --save' >> phase2.sh;"
+        commands += "echo 'permit persist :wheel' > /etc/doas.conf; yay --sudo doas --save; pacman -Rs sudo; ln -s /usr/bin/doas /usr/bin/sudo; pacman -Rs sudo"
 
     if pmt("Are you using mdadm/raid?", "mdadm", False):
         commands += 'mdadm --detail --scan >> /etc/mdadm.conf;\
