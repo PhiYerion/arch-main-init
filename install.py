@@ -4,7 +4,7 @@ import subprocess as sp
 
 def main():
     toInstall = "bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector python cronie"
-    toInstall += " gcc make pacman cmake fakeroot go" # this instead of base-devel
+    toInstall += " gcc make pacman cmake fakeroot go"   # this instead of base-devel
     addInstall = []
     commands = str()
     raid = False
@@ -22,7 +22,7 @@ def main():
             if b_install:
                 addInstall.append(" " + p)
             else:
-                if len(s) > 0:                   # jank
+                if len(s) > 0:                      # jank
                     addInstall.append(" " + s)
             return True
 
@@ -50,7 +50,7 @@ def main():
     pmt("Wifi?", "wpa_supplicant")
     pmt("Laptop?", "acpi acpi_call tlp acpid")
 
-    if not pmt("Would you like to install more minimal base-devel + my selection? (make, gcc, pacman, cmake already included prior)", "archlinux-keyring gzip"):
+    if not pmt("Would you like to install more minimal base-devel + my selection? (make, gcc, pacman, cmake already included prior)", "archlinux-keyring gzip plocate"):
         pmt("Then, would you like to install all base-devel?", "archlinux-keyring fakeroot file findutils flex gettext groff gzip libtool m4 patch pkgconf texinfo which")
 
     if not pmt("My Selection of tools?", "xdg-user-dirs tmux lynx wget vnstat tor openbsd-netcat python-pip cronie openssh htop"):
@@ -63,14 +63,14 @@ def main():
             pmt("iptables-ntf + firewalld?", "iptables-nft ipset firewalld")
 
     if pmt("Do you want a desktop?)", "xorg xorg-xinit pulseaudio alsa-utils pipewire pipewire-jack piper"):
-        if pmt("KDE+Xorg?", "sddm plasma-desktop"):
+        if pmt("KDE+Xorg?", "sddm plasma-desktop konsole"):
             commands += " systemctl enable sddm;"
             if not pmt("Plasma Minimal (plasma-desktop already done)?", "bluedevil drkonqi discover kde-gtk-config khotkeys kpipewire kscreen kscreenlocker ksshaskpass plasma-browser-integration plasma-disks libkscreen plasma-firewall plasma-nm plasma-pa plasma-systemmonitor plasma-vault plasma-workspace plasma-workspace-wallpapers powerdevil sddm-kcm systemsettings"):
                 pmt("Plasma group?", "plasma")
             pmt("Plasma Applications?", " kde-applications")
         else:
             print("Good luck on that.")
-        pmt("Basic apps and tools for desktop?", "xdg-utils")
+        pmt("Basic apps and tools for desktop?", "xdg-utils dolphin")
 
 
         for s in "discord element-desktop torbrowser-launcher vlc obs-studio kdenlive".split():

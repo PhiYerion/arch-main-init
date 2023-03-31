@@ -1,3 +1,5 @@
+#!/bin/bash
+
 import subprocess as sp
 import os.path
 
