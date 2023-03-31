@@ -20,16 +20,11 @@ def main():
             return True
 
     if pmt("Games/Emulation? (Wine, proton, steam, lutris)"):
-        sp.run(
-            'run user -c "git clone https://aur.archlinux.org/yay.git /home/user"\
-            cd /home/user/yay\
-            run user -c "makepkg -si"\
-            cd /root/arch-main-init\
-            echo "[multilib]\
-            Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf\
-            pacman -Sy ttf-liberation lib32-systemd wine wine-gecko wine-mono lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-pipewire pipewire-pulse lib32-libpulse\
-            pacman -Syuu'
-            .split())
+        f = open("/etc/pacman.conf", "a")
+        f.write('[multilib]\nInclude = /etc/pacman.d/mirrorlist')
+        f.close()
+        sp.run('pacman -Sy ttf-liberation lib32-systemd wine wine-gecko wine-mono lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-pipewire pipewire-pulse lib32-libpulse\
+            pacman -Syuu'.split())
         if pmt("Nvidia?"):
             sp.run('pacman -S lib32-nvidia-utils'.split())
         elif pmt("AMD GPU?"):
