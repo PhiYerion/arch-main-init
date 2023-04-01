@@ -76,7 +76,7 @@ def main():
             pmt("Plasma Applications?", " kde-applications")
         else:
             print("Good luck on that.")
-        pmt("Basic apps and tools for desktop?", "xdg-utils dolphin")
+        pmt("Basic apps and tools for desktop?", "xdg-utils dolphin filelight iotop")
 
 
         for s in "discord element-desktop torbrowser-launcher vlc obs-studio kdenlive".split():
