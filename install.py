@@ -4,7 +4,7 @@ import subprocess as sp
 
 def main():
     toInstall = "bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector python cronie"
-    toInstall += "libtool gcc binutils autoconf automake bison debugedit fakeroot flex libisl libmpc m4 make"   # this instead of base-devel
+    toInstall += " libtool gcc binutils autoconf automake bison debugedit fakeroot flex libisl libmpc m4 make"   # this instead of base-devel
     addInstall = []
     preCommands = str()
     commands = str()
@@ -42,7 +42,7 @@ def main():
         toInstall += " sudo"
     else:
         toInstall += " doas"
-        preCommands += "pacman -Rs sudo; echo 'permit persist :wheel' > /etc/doas.conf; ln -s /usr/bin/doas /usr/bin/sudo;"
+        preCommands += "pacman -Rs sudo; rm /usr/bin/sudo; echo 'permit persist :wheel' > /etc/doas.conf; ln -s /usr/bin/doas /usr/bin/sudo;"
         commands += "yay --sudo doas --save; pacman -Rs sudo;"
 
     if pmt("Are you using mdadm/raid?", "mdadm", False):

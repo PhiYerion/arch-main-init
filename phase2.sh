@@ -26,7 +26,7 @@ echo "127.0.0.1 localhost" >> /etc/hosts
 echo "::1       localhost" >> /etc/hosts
 echo "nameserver 1.1.1.1" > /etc/resolv.conf
 reflector -c US -a 6 --sort rate --save /etc/pacman.d/mirrorlist
-pacman -S sudo openssh openvpn
+pacman -S openssh openvpn
 ssh-keygen
 ssh-keygen -t ed25519
 

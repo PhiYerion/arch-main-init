@@ -43,7 +43,8 @@ def main():
             flatpak --user install flathub com.valvesoftware.Steam;\
             flatpak run com.valvesoftware.Steam')
         if pmt("Lutris?"):
-            cmd('flatpak install flathub net.lutris.Lutris')
+            cmd('pacman -S flatpak;\
+            flatpak install flathub net.lutris.Lutris')
 
     for s in 'ckb-next protonvpn-cli protonvpn google-chrome'.split():
         pmt(s, "", True, True)
