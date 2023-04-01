@@ -37,13 +37,15 @@ def main():
 
     commands += 'echo "' + input("What would you like your hostname to be?") + '" > /etc/hostname;  '
 
-    if input("Doas or Sudo (d/s)").lower() in 'sS':
+    if input("Doas or Sudo (d/S)").lower() not in 'dD':
         commands += "sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers;"
         toInstall += " sudo"
     else:
         toInstall += " doas"
-        preCommands += "pacman -Rs sudo; rm /usr/bin/sudo; echo 'permit persist :wheel' > /etc/doas.conf; ln -s /usr/bin/doas /usr/bin/sudo;"
-        commands += "yay --sudo doas --save; pacman -Rs sudo;"
+        commands += "pacman -Rs sudo; rm /usr/bin/sudo; echo 'permit persist :wheel' > /etc/doas.conf; ln -s /usr/bin/doas /usr/bin/sudo;"
+        f = open("postChroot.py", "a")
+        f.write("cmd('yay --sudo doas --save; pacman -Rs sudo;'")
+        f.close()
 
     if pmt("Are you using mdadm/raid?", "mdadm", False):
         commands += 'mdadm --detail --scan >> /etc/mdadm.conf;\
@@ -110,7 +112,7 @@ def main():
         toInstall += " mesa AMDGPU"
 
     seperator = ' '
-    runString = "pacstrap -K /mnt " + toInstall + seperator.join(addInstall)
+    runString = "pacman-key --init; pacstrap -K /mnt " + toInstall + seperator.join(addInstall)
     print(runString)
     while True:
         inp = input("Continue with this? (y/n)").lower()

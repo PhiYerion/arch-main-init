@@ -3,8 +3,15 @@
 import subprocess as sp
 import os.path
 
-sp.run('chmod +x /root/arch-main-init/phase2.sh'.split())
-sp.run('pacman -Syuu'.split())
-sp.run('bash /root/arch-main-init/phase2.sh'.split())
+def cmd(s, user = False):
+    if user:
+        sp.run(['runuser', 'user' '-Pc', s])
+    else:
+        sp.run(['runuser', '-Pc', s])
+
+cmd('pacman -Syuu')
+cmd('chmod +x /root/arch-main-init/phase2.sh')
+cmd('bash /root/arch-main-init/phase2.sh')
+cmd('git clone https://aur.archlinux.org/yay.git /home/user/yay; cd /home/user/yay; makepkg -si; cd /root/arch-main-init;')
 
 print("time to reboot")

@@ -37,7 +37,4 @@ set tabstop=4
 set autoindent
 set mouse=a" >> ~/.vimrc
 
-runuser -P user -c "git clone https://aur.archlinux.org/yay.git /home/user/yay"
-cd /home/user/yay
-runuser -P user -c "makepkg -si"
-cd /root/arch-main-init
+
