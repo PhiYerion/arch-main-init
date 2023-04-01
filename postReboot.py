@@ -19,31 +19,35 @@ def main():
                     addInstall.append(" " + s)
             return True
 
-    def quicksp(fullString):
-        for line in fullString.split(";"):
-            sp.run(line.split())
+    def cmd(s, user = False):
+        if user:
+            sp.run(['runuser', 'user' '-Pc', s])
+        else:
+            sp.run(['runuser', '-Pc ', s])
 
     if pmt("Games/Emulation? (Wine, proton, steam, lutris)"):
         f = open("/etc/pacman.conf", "a")
-        f.write('[multilib]\nInclude = /etc/pacman.d/mirrorlist')
+        f.write('[multilib]\nInclude = /etc/pacman.d/mirrorlist\n')
         f.close()
-        sp.run('pacman -Sy ttf-liberation lib32-systemd wine wine-gecko wine-mono lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-pipewire pipewire-pulse lib32-libpulse\
-            pacman -Syuu'.split())
+        cmd('pacman -Sy ttf-liberation lib32-systemd wine wine-gecko wine-mono lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-pipewire pipewire-pulse lib32-libpulse;\
+            pacman -Syuu')
         if pmt("Nvidia?"):
-            sp.run('pacman -S lib32-nvidia-utils'.split())
+            cmd('pacman -S lib32-nvidia-utils')
         elif pmt("AMD GPU?"):
-            sp.run('pacman -S lib32-mesa'.split())
+            cmd('pacman -S lib32-mesa')
             if pmt('display?'):
-                sp.run('pacman -S xf86-video-amdgpu'.split())
+                cmd('pacman -S xf86-video-amdgpu')
         if pmt("Steam?"):
-            quicksp('pacman -S flatpak;\
+            cmd('pacman -S flatpak;\
             flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo;\
             flatpak --user install flathub com.valvesoftware.Steam;\
             flatpak run com.valvesoftware.Steam')
         if pmt("Lutris?"):
-            sp.run('flatpak install flathub net.lutris.Lutris'.split())
+            cmd('flatpak install flathub net.lutris.Lutris')
 
     for s in 'ckb-next protonvpn-cli protonvpn google-chrome'.split():
         pmt(s, "", True, True)
+
+    cmd("runuser -P user -c 'yay -S " + addInstall.join() + "'")
 
 main()

@@ -7,6 +7,7 @@ passwd user
 cp makepkg.conf /etc/makepkg.conf
 
 systemctl enable NetworkManager
+systemctl enable cronie
 
 ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
 hwclock --systohc
@@ -36,7 +37,7 @@ set tabstop=4
 set autoindent
 set mouse=a" >> ~/.vimrc
 
-runuser user -c "git clone https://aur.archlinux.org/yay.git /home/user/yay"
+runuser -P user -c "git clone https://aur.archlinux.org/yay.git /home/user/yay"
 cd /home/user/yay
 runuser -P user -c "makepkg -si"
 cd /root/arch-main-init

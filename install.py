@@ -26,6 +26,12 @@ def main():
                     addInstall.append(" " + s)
             return True
 
+    def cmd(s, user = False):
+        if user:
+            sp.run(['runuser', 'user' '-Pc', s])
+        else:
+            sp.run(['runuser', '-Pc ', s])
+
     commands += 'echo "' + input("What would you like your hostname to be?") + '" > /etc/hostname;  '
 
 
@@ -100,9 +106,7 @@ def main():
     elif pmt("AMD GPU?"):
         toInstall += " mesa AMDGPU"
 
-    for s in addInstall:
-        toInstall += s
-    runString = "pacstrap -K /mnt " + toInstall
+    runString = "pacstrap -K /mnt " + toInstall + addInstall.join()
     print(runString)
     while True:
         inp = input("Continue with this? (y/n)").lower()
@@ -111,15 +115,14 @@ def main():
         elif 'y' in inp:
             break
 
-    sp.run(runString.split())
-    sp.run('systemctl enable cronie'.split())
+    cmd(runString)
     if pmt("Detect other OSes?"):
         commands += 'echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub'
-    sp.run('cp -r /root/arch-main-init /mnt/root/arch-main-init'.split())
+    cmd('cp -r /root/arch-main-init /mnt/root/arch-main-init')
     f = open("/mnt/root/arch-main-init/phase2.sh", "a")
     f.write(commands)
     f.close()
-    sp.run('bash /root/arch-main-init/phase1.sh'.split())
+    cmd('genfstab -U /mnt >> /mnt/etc/fstab; arch-chroot /mnt bash -c /root/arch-main-init/postChroot.py')
     # Chrooted
 
 main()
