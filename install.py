@@ -4,8 +4,9 @@ import subprocess as sp
 
 def main():
     toInstall = "bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector python cronie"
-    toInstall += " base-devel"   # this instead of base-devel
+    toInstall += "libtool gcc binutils autoconf automake bison debugedit fakeroot flex libisl libmpc m4 make"   # this instead of base-devel
     addInstall = []
+    preCommands = str()
     commands = str()
     raid = False
     sudo = True
@@ -30,17 +31,19 @@ def main():
         if user:
             sp.run(['runuser', 'user' '-Pc', s])
         else:
-            sp.run(['runuser', '-Pc ', s])
+            sp.run(['runuser', '-Pc', s])
+
+    cmd('timedatectl set-ntp true')
 
     commands += 'echo "' + input("What would you like your hostname to be?") + '" > /etc/hostname;  '
-
 
     if input("Doas or Sudo (d/s)").lower() in 'sS':
         commands += "sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers;"
         toInstall += " sudo"
     else:
         toInstall += " doas"
-        commands += "echo 'permit persist :wheel' > /etc/doas.conf; yay --sudo doas --save; pacman -Rs sudo; ln -s /usr/bin/doas /usr/bin/sudo;"
+        preCommands += "pacman -Rs sudo; echo 'permit persist :wheel' > /etc/doas.conf; ln -s /usr/bin/doas /usr/bin/sudo;"
+        commands += "yay --sudo doas --save; pacman -Rs sudo;"
 
     if pmt("Are you using mdadm/raid?", "mdadm", False):
         commands += 'mdadm --detail --scan >> /etc/mdadm.conf;\
@@ -106,7 +109,8 @@ def main():
     elif pmt("AMD GPU?"):
         toInstall += " mesa AMDGPU"
 
-    runString = "pacstrap -K /mnt " + toInstall + addInstall.join()
+    seperator = ' '
+    runString = "pacstrap -K /mnt " + toInstall + seperator.join(addInstall)
     print(runString)
     while True:
         inp = input("Continue with this? (y/n)").lower()
@@ -115,7 +119,7 @@ def main():
         elif 'y' in inp:
             break
 
-    cmd(runString)
+    cmd(runString + "; " + preCommands)
     if pmt("Detect other OSes?"):
         commands += 'echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub'
     cmd('cp -r /root/arch-main-init /mnt/root/arch-main-init')
