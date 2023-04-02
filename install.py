@@ -4,7 +4,7 @@ import subprocess as sp
 
 def main():
     toInstall = "bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector python cronie"
-    toInstall += " libtool gcc binutils autoconf automake bison debugedit fakeroot flex libisl libmpc m4 make arch rsync"   # this instead of base-devel
+    toInstall += " libtool gcc binutils autoconf automake bison file findutils debugedit fakeroot flex libisl libmpc m4 make pkgconf archlinux-keyring rsync patch gettext grep groff pacman texinfo which"   # this instead of base-devel
     addInstall = []
     preCommands = str()
     commands = str()
