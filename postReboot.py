@@ -27,10 +27,8 @@ def main():
 
 
     if pmt("Games/Emulation? (Wine, proton, steam, lutris)"):
-        f = open("/etc/pacman.conf", "a")
-        f.write('[multilib]\nInclude = /etc/pacman.d/mirrorlist\n')
-        f.close()
-        cmd('pacman -Sy ttf-liberation lib32-systemd wine wine-gecko wine-mono lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-pipewire pipewire-pulse lib32-libpulse;\
+        cmd("sed -zi 's/#\[multilib\]\n#/\[multilib\]\n/)' /etc/pacman.conf")
+        cmd('pacman -Sy ttf-liberation lib32-systemd wine wine-gecko wine-mono lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-pipewire pipewire-pulse lib32-libpulse flatpak;\
             pacman -Syuu')
         if pmt("Nvidia?"):
             cmd('pacman -S lib32-nvidia-utils')
@@ -39,18 +37,16 @@ def main():
             if pmt('display?'):
                 cmd('pacman -S xf86-video-amdgpu')
         if pmt("Steam?"):
-            cmd('pacman -S flatpak;\
-            flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo;\
+            cmd('flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo;\
             flatpak --user install flathub com.valvesoftware.Steam;\
-            flatpak run com.valvesoftware.Steam')
+            flatpak run com.valvesoftware.Steam', True)
         if pmt("Lutris?"):
-            cmd('pacman -S flatpak;\
-            flatpak install flathub net.lutris.Lutris')
+            cmd('flatpak install flathub net.lutris.Lutris', True)
 
     for s in 'ckb-next protonvpn-cli protonvpn google-chrome'.split():
         pmt(s, "", True, True)
 
     seperator = ' '
-    cmd("yay -S" + seperator.join(addInstall))
+    cmd("yay -S" + seperator.join(addInstall), True)
 
 main()
