@@ -21,9 +21,10 @@ def main():
 
     def cmd(s, user = False):
         if user:
-            sp.run(['runuser', 'user' '-Pc', s])
+            sp.run(['runuser', 'user', '-Pc', s])
         else:
-            sp.run(['runuser', '-Pc ', s])
+            sp.run(['runuser', '-Pc', s])
+
 
     if pmt("Games/Emulation? (Wine, proton, steam, lutris)"):
         f = open("/etc/pacman.conf", "a")
@@ -49,6 +50,7 @@ def main():
     for s in 'ckb-next protonvpn-cli protonvpn google-chrome'.split():
         pmt(s, "", True, True)
 
-    cmd("runuser -P user -c 'yay -S " + addInstall.join() + "'")
+    seperator = ' '
+    cmd("yay -S" + seperator.join(addInstall))
 
 main()

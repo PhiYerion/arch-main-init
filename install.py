@@ -4,7 +4,7 @@ import subprocess as sp
 
 def main():
     toInstall = "bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector python cronie"
-    toInstall += " libtool gcc binutils autoconf automake bison debugedit fakeroot flex libisl libmpc m4 make"   # this instead of base-devel
+    toInstall += " libtool gcc binutils autoconf automake bison debugedit fakeroot flex libisl libmpc m4 make arch rsync"   # this instead of base-devel
     addInstall = []
     preCommands = str()
     commands = str()
@@ -44,7 +44,7 @@ def main():
         toInstall += " doas"
         commands += "pacman -Rs sudo; rm /usr/bin/sudo; echo 'permit persist :wheel' > /etc/doas.conf; ln -s /usr/bin/doas /usr/bin/sudo;"
         f = open("postChroot.py", "a")
-        f.write("cmd('yay --sudo doas --save; pacman -Rs sudo;'")
+        f.write("cmd('yay --sudo doas --save; pacman -Rs sudo;')\n")
         f.close()
 
     if pmt("Are you using mdadm/raid?", "mdadm", False):
