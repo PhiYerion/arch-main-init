@@ -13,10 +13,10 @@ def main():
 
     def pmt(prompt, toInstall = str(), defaultY = True, b_install = False):
         if defaultY:
-            inp = input(prompt + " (Y/n)").lower()
+            inp = input(prompt + " (Y/n): ").lower()
             confirm = "n" not in inp
         else:
-            inp = input(prompt + " (y/N)").lower()
+            inp = input(prompt + " (y/N): ").lower()
             confirm = "y" in inp
 
         if confirm:
@@ -33,13 +33,13 @@ def main():
         else:
             sp.run(["runuser", "-Pc", command])
 
-    username = input("what do you want your username to be?")
+    username = input("What do you want your username to be: ")
 
     cmd("timedatectl set-ntp true")
 
-    commands += "echo '" + input("What would you like your hostname to be?") + "' > /etc/hostname;  "
+    commands += "echo '" + input("What would you like your hostname to be: ") + "' > /etc/hostname;  "
 
-    if input("Doas or Sudo (d/S)").lower() not in "dD":
+    if input("Doas or Sudo (d/S): ").lower() not in "dD":
         commands += "sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers;"
         toInstall += " sudo"
     else:
@@ -66,7 +66,7 @@ def main():
     if not pmt("Would you like to install more minimal base-devel + my selection? (make, gcc, pacman, cmake already included prior)", "archlinux-keyring gzip plocate"):
         pmt("Then, would you like to install all base-devel?", "archlinux-keyring fakeroot file findutils flex gettext groff gzip libtool m4 patch pkgconf texinfo which")
 
-    if not pmt("My Selection of tools?", "xdg-user-dirs zellij dust nushell lynx wget vnstat tor openbsd-netcat python-pip cronie openssh wireguard htop iotop"):
+    if not pmt("My Selection of tools?", "xdg-user-dirs zellij dust nushell lynx wget vnstat tor openbsd-netcat python-pip cronie openssh wireguard-tools htop iotop"):
         if pmt("Would you like to select some instead?"):
             # add aur/surf
             for s in "user-dirs zellij dust nushell lynx wget vnstat tor openbsd-netcat python-pip cronie openssh wireguard htop iotop".split():
@@ -104,7 +104,7 @@ def main():
         for s in "discord element-desktop torbrowser-launcher vlc obs-studio kdenlive".split():
             pmt(s, "", True, True)
 
-    if "yY" in input("Nerd-Fonts?").lower():
+    if "yY" in input("Nerd-Fonts? (y/N): ").lower():
         commands += "wget https://raw.githubusercontent.com/PhiYerion/get-nerd-fonts/main/test.py; ./test.py"
 
     if not pmt("Nushell?", "nushell kitty"):
