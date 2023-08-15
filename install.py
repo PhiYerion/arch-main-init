@@ -73,8 +73,8 @@ def main():
                 pmt(s)
 
     if pmt("Do you have a git account?"):
-        commands += f"git config --global user.name {input('What is your username?')}"
-        commands += f"git config --global user.email {input('What is your email?')}"
+        commands += f"git config --global user.name {input('What is your username: ')}"
+        commands += f"git config --global user.email {input('What is your email: ')}"
 
     if pmt("Firewall?"):
         if not pmt("UFW? (other option is iptables)", "ufw"):
@@ -128,6 +128,7 @@ def main():
     elif pmt("AMD GPU?"):
         toInstall += " mesa AMDGPU"
 
+
     runString = "pacman-key --init; pacstrap -K /mnt " + toInstall + " ".join(addInstall)
     print(runString)
     while True:
@@ -137,6 +138,7 @@ def main():
         elif "y" in inp:
             break
 
+    cmd("echo 'ParallelDownloads = 5' >> /etc/pacman.conf")
     cmd(runString + "; " + preCommands)
     if pmt("Detect other OSes?"):
         commands += "echo 'GRUB_DISABLE_OS_PROBER=false' >> /etc/default/grub"
@@ -146,5 +148,5 @@ def main():
     f.close()
     cmd(f"genfstab -U /mnt >> /mnt/etc/fstab; arch-chroot /mnt bash -c 'export NEW_USERNAME=\"{username}\"; /root/arch-main-init/postChroot.py'")
     # Chrooted
--
+
 main()
