@@ -138,7 +138,7 @@ def main():
         elif "y" in inp:
             break
 
-    cmd("echo 'ParallelDownloads = 5' >> /etc/pacman.conf")
+    cmd("sed -ie 's/# Misc options/# Misc options\nParellelDownloads = 5/' /etc/pacman.conf")
     cmd(runString + "; " + preCommands)
     if pmt("Detect other OSes?"):
         commands += "echo 'GRUB_DISABLE_OS_PROBER=false' >> /etc/default/grub"
