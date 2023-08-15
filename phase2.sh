@@ -1,8 +1,8 @@
 #!/bin/bash
 
 passwd
-useradd -mG wheel user
-passwd user
+useradd -mG wheel $NEW_USERNAME
+passwd $NEW_USERNAME
 
 cp makepkg.conf /etc/makepkg.conf
 
@@ -15,17 +15,16 @@ locale-gen
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 
-cd /home/user
-runuser user -c "git clone https://git.suckless.org/9base"
+cd /home/$NEW_USERNAME
+runuser $NEW_USERNAME -c "git clone https://git.suckless.org/9base"
 cd 9base/
-runuser user -c "make"
+runuser $NEW_USERNAME -c "make"
 cd ..
 rm -rf 9base/
 
 echo "127.0.0.1 localhost\n::1       localhost" > /etc/hosts
 echo "nameserver 1.1.1.1" > /etc/resolv.conf
 reflector -c US -a 6 --sort rate --save /etc/pacman.d/mirrorlist
-pacman -S openssh openvpn
 ssh-keygen
 ssh-keygen -t ed25519
 

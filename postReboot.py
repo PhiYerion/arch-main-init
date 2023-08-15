@@ -18,10 +18,12 @@ def main():
                 if len(s) > 0:                   # jank
                     addInstall.append(" " + s)
             return True
+        
+    username = sp.check_output('ls /home', shell=True, stderr=sp.STDOUT, text=True).strip()
 
     def cmd(s, user = False):
         if user:
-            sp.run(['runuser', 'user', '-Pc', s])
+            sp.run(['runuser', username, '-Pc', s])
         else:
             sp.run(['runuser', '-Pc', s])
 
@@ -37,9 +39,7 @@ def main():
             if pmt('display?'):
                 cmd('pacman -S xf86-video-amdgpu')
         if pmt("Steam?"):
-            cmd('flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo;\
-            flatpak --user install flathub com.valvesoftware.Steam;\
-            flatpak run com.valvesoftware.Steam', True)
+            pmt('steam', 'steam')
         if pmt("Lutris?"):
             cmd('flatpak install flathub net.lutris.Lutris', True)
 
