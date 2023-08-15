@@ -138,8 +138,10 @@ def main():
         elif "y" in inp:
             break
 
-    sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 5/' /etc/pacman.conf", shell=True)
+    # There is a lot of small things that need to be installed, so setting to 20 for that
+    sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf", shell=True)
     cmd(runString + "; " + preCommands)
+    sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 10/' /mnt/etc/pacman.conf", shell=True)
     if pmt("Detect other OSes?"):
         commands += "echo 'GRUB_DISABLE_OS_PROBER=false' >> /etc/default/grub"
     cmd("cp -r /root/arch-main-init /mnt/root/arch-main-init")
