@@ -11,9 +11,12 @@ def cmd(s, user = False):
     else:
         sp.run(['runuser', '-Pc', s])
 
+cmd(f"useradd {username} -mG wheel")
 cmd('pacman-key --init; pacman-key --populate archlinux; pacman -Syuu')
 cmd('chmod +x /root/arch-main-init/phase2.sh')
 cmd('bash /root/arch-main-init/phase2.sh')
-cmd('git clone https://aur.archlinux.org/paru.git /home/user/paru; cd /home/user/paru; makepkg -si; cd /root/arch-main-init;', True)
+cmd("rustup default stable")
+cmd('git clone https://aur.archlinux.org/paru.git /home/user/paru; cd /home/user/paru; makepkg -si;', True)
+cmd("paru --sudo doas; pacman -Rs sudo;")
 
 print("time to reboot")

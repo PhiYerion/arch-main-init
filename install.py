@@ -3,7 +3,8 @@
 import subprocess as sp
 
 def main():
-    toInstall = "bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector python cronie"
+    # Rustup is for paru, which is the only option at this moment.
+    toInstall = "bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector python cronie rustup"
     toInstall += " libtool gcc binutils autoconf automake bison file findutils debugedit fakeroot flex libisl libmpc m4 make pkgconf archlinux-keyring rsync patch gettext grep groff pacman texinfo which"   # this instead of base-devel
     addInstall = []
     preCommands = str()
@@ -46,7 +47,7 @@ def main():
         toInstall += " doas"
         commands += "pacman -Rs sudo; rm /usr/bin/sudo; echo 'permit persist :wheel' > /etc/doas.conf; ln -s /usr/bin/doas /usr/bin/sudo;"
         f = open("postChroot.py", "a")
-        f.write("cmd('yay --sudo doas --save; pacman -Rs sudo;')\n")
+        f.write("cmd('paru --sudo doas; pacman -Rs sudo;')\n")
         f.close()
 
     if pmt("Are you using mdadm/raid?", "mdadm", False):
@@ -142,6 +143,7 @@ def main():
     sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf", shell=True)
     cmd(runString + "; " + preCommands)
     sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 10/' /mnt/etc/pacman.conf", shell=True)
+
     if pmt("Detect other OSes?"):
         commands += "echo 'GRUB_DISABLE_OS_PROBER=false' >> /etc/default/grub"
     cmd("cp -r /root/arch-main-init /mnt/root/arch-main-init")
