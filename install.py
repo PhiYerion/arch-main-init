@@ -11,14 +11,21 @@ def main():
     commands = str()
     raid = False
     sudo = True
+    debug = input("debug?")
 
     def pmt(prompt, toInstall = str(), defaultY = True, b_install = False):
         if defaultY:
-            inp = input(prompt + " (Y/n): ").lower()
-            confirm = "n" not in inp
+            if debug:
+                confirm = True
+            else:
+                inp = input(prompt + " (Y/n): ").lower()
+                confirm = "n" not in inp
         else:
-            inp = input(prompt + " (y/N): ").lower()
-            confirm = "y" in inp
+            if debug:
+                confirm = True
+            else:
+                inp = input(prompt + " (y/N): ").lower()
+                confirm = "y" in inp
 
         if confirm:
             if b_install:
@@ -34,11 +41,11 @@ def main():
         else:
             sp.run(["runuser", "-Pc", command])
 
-    username = input("What do you want your username to be: ")
+    username = "user" if debug else input("What do you want your username to be: ")
 
     cmd("timedatectl set-ntp true")
 
-    commands += "echo '" + input("What would you like your hostname to be: ") + "' > /etc/hostname;  "
+    commands += "echo '" + ("host" if debug else input("What would you like your hostname to be: ")) + "' > /etc/hostname;  "
 
     if input("Doas or Sudo (d/S): ").lower() not in "dD":
         commands += "sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers;"
@@ -141,7 +148,9 @@ def main():
 
     # There is a lot of small things that need to be installed, so setting to 20 for that
     sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf", shell=True)
+    sp.run("echo 'DisableDownloadTimeout' >> /etc/pacman.conf", shell=True)
     cmd(runString + "; " + preCommands)
+    sp.run("echo 'DisableDownloadTimeout' >> /mnt/etc/pacman.conf", shell=True)
     sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 10/' /mnt/etc/pacman.conf", shell=True)
 
     if pmt("Detect other OSes?"):
