@@ -17,6 +17,6 @@ cmd('chmod +x /root/arch-main-init/phase2.sh')
 cmd('bash /root/arch-main-init/phase2.sh')
 cmd("rustup default stable", True)
 cmd('git clone https://aur.archlinux.org/paru.git /home/user/paru; cd /home/user/paru; makepkg -si;', True)
-cmd("paru --sudo doas; pacman -Rs sudo;")
+#cmd("paru --sudo doas; pacman -Rs sudo;")
 
 print("time to reboot")

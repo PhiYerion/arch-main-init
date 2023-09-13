@@ -1,6 +1,7 @@
 #!/bin/python
 
 import subprocess as sp
+import time
 
 def main():
     # Rustup is for paru, which is the only option at this moment.
@@ -89,10 +90,15 @@ def main():
             pmt("iptables-ntf + firewalld?", "iptables-nft ipset firewalld")
 
     if pmt("Do you want a desktop?)", "xorg xorg-xinit pulseaudio alsa-utils pipewire pipewire-jack piper"):
-        if pmt("KDE+Xorg+Wayland support? (Other option is Hyprland + Wayland)", "sddm plasma-desktop konsole plasma-wayland-session"):
+        if pmt("KDE+Xorg+Wayland support? (Other option is Hyprland + Wayland)", "sddm plasma-desktop plasma-wayland-session"):
             commands += " systemctl enable sddm;"
-            if not pmt("Plasma Minimal (plasma-desktop already done)?", "bluedevil drkonqi discover kde-gtk-config khotkeys kpipewire kscreen kscreenlocker ksshaskpass plasma-browser-integration plasma-disks libkscreen plasma-firewall plasma-nm plasma-pa plasma-systemmonitor plasma-vault plasma-workspace plasma-workspace-wallpapers powerdevil sddm-kcm systemsettings"):
-                pmt("Plasma group?", "plasma")
+            if pmt("My selection of plasma tools and theme?", "khotkeys kpipewire kscreen kscreenlocker ksshaskpass plasma-disks libkscreen plasma-firewall plasma-nm plasma-pa plasma-systemmonitor plasma-vault plasma-workspace plasma-workspace-wallpapers powerdevil sddm-kcm systemsettings"):
+                aur_install += "candy-icons-git"
+                commands += "wget 'https://r4.wallpaperflare.com/wallpaper/906/970/555/digital-art-eclipse-clouds-berserk-wallpaper-c970584d01facd0b06a7688f9071767d.jpg' -O /home/user/Pictures/wallpaper.jpg; cd $(mktemp -d); git clone https://github.com/pwyde/monochrome-kde; cd monochrome-kde; ./install.sh -i; "
+            else pmt("Plasma Minimal (plasma-desktop already done)?", "bluedevil drkonqi discover kde-gtk-config khotkeys kpipewire kscreen kscreenlocker ksshaskpass plasma-browser-integration plasma-disks libkscreen plasma-firewall plasma-nm plasma-pa plasma-systemmonitor plasma-vault plasma-workspace plasma-workspace-wallpapers powerdevil sddm-kcm systemsettings konsole")
+            
+            pmt("Plasma group?", "plasma")
+
             pmt("Plasma Applications?", " kde-applications")
         elif pmt("Hyprland", "hyprpaper waybar xorg-xwayland qt6-wayland qt5-wayland libva gtk-layer-shell egl-wayland kitty"):
             if pmt("nvidia?", "wlroots-nvidia-git hyprland-nvidia"):
@@ -149,7 +155,15 @@ def main():
     # There is a lot of small things that need to be installed, so setting to 20 for that
     sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf", shell=True)
     sp.run("echo 'DisableDownloadTimeout' >> /etc/pacman.conf", shell=True)
-    cmd(runString + "; " + preCommands)
+    for i in range(0..10):
+        try:
+            result = sp.run(runString, capture_output=True, text=True, check=True)
+            break
+        except:
+            time.sleep(3)
+            continue
+
+    cmd(preCommands)
     sp.run("echo 'DisableDownloadTimeout' >> /mnt/etc/pacman.conf", shell=True)
     sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 10/' /mnt/etc/pacman.conf", shell=True)
 
