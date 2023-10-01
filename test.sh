@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BRANCH="dejavos"
+BRANCH="DejaVOS"
 BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
 mkdir "$BASE_DIR/DejaVOS"
 archiso=`find /home -regex '.*archlinux.*iso$' -print -quit`
@@ -49,10 +49,8 @@ cmd() {
 			char="dot"
 		elif [[ $char == ":" ]]; then
 			char="shift-semicolon"
-		elif [[ $char == "S" ]]; then
-			char="shift-s"
-		elif [[ $char == "F" ]]; then
-			char="shift-f"
+		elif [[ $char =~ ^[A-Z]+$ ]]; then
+			char="shift-${char,,}"
 		elif [[ $char == "\\" ]]; then
 			char="ctrl-m"
 			echo "sendkey $char"
