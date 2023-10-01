@@ -12,7 +12,8 @@ def main():
     commands = str()
     raid = False
     sudo = True
-    debug = input("debug?")
+    debug = input("debug?")[0] is "y"
+    aur_install = ""
 
     def pmt(prompt, toInstall = str(), defaultY = True, b_install = False):
         if defaultY:
@@ -66,7 +67,7 @@ def main():
 
     pmt("Are you going to use nfts?", "ntfs-3g")
 
-    pmt("Virtual machines?", "vde2 virt-manager qemu-base qemu-arch-extra edk2-ovmf bridge-utils")
+    pmt("Virtual machines?", "vde2 virt-manager qemu-full edk2-ovmf bridge-utils libvirt")
 
     pmt("Bluetooth?", "bluez bluez-utils")
     pmt("Wifi?", "wpa_supplicant")
@@ -155,7 +156,7 @@ def main():
     # There is a lot of small things that need to be installed, so setting to 20 for that
     sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf", shell=True)
     sp.run("echo 'DisableDownloadTimeout' >> /etc/pacman.conf", shell=True)
-    for i in range(0..10):
+    for i in range(0,10):
         try:
             result = sp.run(runString, capture_output=True, text=True, check=True)
             break
