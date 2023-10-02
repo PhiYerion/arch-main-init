@@ -146,7 +146,7 @@ def main():
         toInstall += " mesa AMDGPU"
 
 
-    runString = "rm -rf /etc/pacman.d/*; pacman-key --init; pacman-key --populatre archlinux; sudo pacman -S archlinux-keyring; pacstrap -K /mnt " + toInstall + " ".join(addInstall)
+    runString = "rm -rf /etc/pacman.d/gnupg/*; pacman-key --init; pacman-key --populatre archlinux; sudo pacman -S archlinux-keyring; pacstrap -K /mnt " + toInstall + " ".join(addInstall)
     print(runString)
     while True:
         inp = input("Continue with this? (y/n)").lower()
