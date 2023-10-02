@@ -146,7 +146,7 @@ def main():
         toInstall += " mesa AMDGPU"
 
 
-    runString = "rm -rf /etc/pacman.d/gnupg/*; pacman-key --init; pacman-key --populatre archlinux; sudo pacman -S archlinux-keyring; pacstrap -K /mnt " + toInstall + " ".join(addInstall)
+    runString = "sudo pacman -S archlinux-keyring; pacstrap -K /mnt " + toInstall + " ".join(addInstall)
     print(runString)
     while True:
         inp = input("Continue with this? (y/n)").lower()
@@ -158,11 +158,13 @@ def main():
     # There is a lot of small things that need to be installed, so setting to 20 for that
     sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf", shell=True)
     sp.run("echo 'DisableDownloadTimeout' >> /etc/pacman.conf", shell=True)
-    for i in range(0,10):
+    print("starting the range")
+    for i in range(10):
         try:
+            print(f"run {i}")
             result = sp.run(runString, capture_output=True, text=True, check=True)
             break
-        except:
+        except: 
             time.sleep(3)
             continue
 
