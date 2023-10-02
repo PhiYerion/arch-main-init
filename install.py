@@ -39,9 +39,9 @@ def main():
 
     def cmd(command, user = False):
         if user:
-            sp.run(["runuser", username, "-Pc", command])
+            return sp.run(["runuser", username, "-Pc", command])
         else:
-            sp.run(["runuser", "-Pc", command])
+            return sp.run(["runuser", "-Pc", command])
 
     username = "user" if debug else input("What do you want your username to be: ")
 
@@ -51,9 +51,9 @@ def main():
 
     if input("Doas or Sudo (d/S): ").lower() not in "dD":
         commands += "sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers;"
-        toInstall += " sudo"
+        toInstall += " sudo "
     else:
-        toInstall += " doas"
+        toInstall += " doas "
         commands += "pacman -Rs sudo; rm /usr/bin/sudo; echo 'permit persist :wheel' > /etc/doas.conf; ln -s /usr/bin/doas /usr/bin/sudo;"
         f = open("postChroot.py", "a")
         f.write("cmd('paru --sudo doas; pacman -Rs sudo;')\n")
@@ -146,7 +146,7 @@ def main():
         toInstall += " mesa AMDGPU"
 
 
-    runString = "sudo pacman -S archlinux-keyring; pacstrap -K /mnt " + toInstall + " ".join(addInstall)
+    runString = "pacstrap -K /mnt " + toInstall + " ".join(addInstall)
     print(runString)
     while True:
         inp = input("Continue with this? (y/n)").lower()
@@ -162,14 +162,14 @@ def main():
     for i in range(10):
         try:
             print(f"run {i}")
-            result = sp.run(runString, capture_output=True, text=True, check=True)
+            result = cmd(runString)
             break
         except: 
             time.sleep(3)
             continue
 
     cmd(preCommands)
-    sp.run("echo 'DisableDownloadTimeout' >> /mnt/etc/pacman.conf", shell=True)
+    #sp.run("echo 'DisableDownloadTimeout' >> /mnt/etc/pacman.conf", shell=True)
     sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 10/' /mnt/etc/pacman.conf", shell=True)
 
     if pmt("Detect other OSes?"):
