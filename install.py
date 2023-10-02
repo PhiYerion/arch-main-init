@@ -12,7 +12,7 @@ def main():
     commands = str()
     raid = False
     sudo = True
-    debug = input("debug?")[0] is "y"
+    debug = input("debug?")[0] == "y"
     aur_install = ""
 
     def pmt(prompt, toInstall = str(), defaultY = True, b_install = False):
@@ -133,6 +133,8 @@ def main():
     if pmt("Is this a server?", "", False):
         pmt("Network server utils? - installdnsmasq dnsutils inetutils nss-mdns", "dnsmasq dnsutils inetutils nss-mdns")
 
+    if pmt("Cybersec tools?"):
+        toInstall += "radare2 zaproxy wireshark-qt"
     # Hardware
     if "GenuineIntel" in open("/proc/cpuinfo", "r").read():
         toInstall += " intel-ucode"
@@ -144,7 +146,7 @@ def main():
         toInstall += " mesa AMDGPU"
 
 
-    runString = "pacman-key --init; pacstrap -K /mnt " + toInstall + " ".join(addInstall)
+    runString = "rm -rf /etc/pacman.d/*; pacman-key --init; pacman-key --populatre archlinux; sudo pacman -S archlinux-keyring; pacstrap -K /mnt " + toInstall + " ".join(addInstall)
     print(runString)
     while True:
         inp = input("Continue with this? (y/n)").lower()

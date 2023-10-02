@@ -51,6 +51,8 @@ cmd() {
 			char="shift-semicolon"
 		elif [[ $char =~ ^[A-Z]+$ ]]; then
 			char="shift-${char,,}"
+		elif [[ $char == "*" ]]; then
+			char="shift-8"
 		elif [[ $char == "\\" ]]; then
 			char="ctrl-m"
 			echo "sendkey $char"
@@ -65,5 +67,5 @@ cmd() {
 }
 
 sleep 1
-cmd "passwd\arch\arch\systemctl start sshd\parted -s /dev/sda mklabel gpt\parted -s /dev/sda mkpart primary ext4 1mib 512mib\parted -s /dev/sda mkpart primary ext4 512mib 100%\mkfs.vfat -F32 /dev/sda1;mkfs.ext4 -F /dev/sda2;mount --mkdir /dev/sda2 /mnt;mount --mkdir /dev/sda1 /mnt/boot;pacman -Sy git; git clone https://github.com/phiyerion/arch-main-init; cd arch-main-init; git checkout $BRANCH; git branch $BRANCH; ./install.py\n\n\n\n\n\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y" \
+cmd "passwd\arch\arch\systemctl start sshd\parted -s /dev/sda mklabel gpt\parted -s /dev/sda mkpart primary ext4 1mib 512mib\parted -s /dev/sda mkpart primary btrfs 512mib 100%\rm -rf /etc/pacman.d/gnupg/*\y\y\y\y\y\y\pacman-key --init; pacman-key --populate archlinux; pacman -Sy archlinux-keyring; mkfs.vfat -F32 /dev/sda1;mkfs.btrfs /dev/sda2;mount --mkdir /dev/sda2 /mnt;mount --mkdir /dev/sda1 /mnt/boot;pacman -Sy git; git clone https://github.com/phiyerion/arch-main-init; cd arch-main-init; git checkout $BRANCH; git branch $BRANCH; ./install.py\n\n\n\n\n\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y" \
 	| nc 127.0.0.1 18901
