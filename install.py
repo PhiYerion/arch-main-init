@@ -146,7 +146,7 @@ def main():
         toInstall += " mesa AMDGPU"
 
 
-    runString = "pacstrap --disable-download-timeout -K /mnt " + toInstall + " ".join(addInstall)
+    runString = "pacstrap -K /mnt " + toInstall + " ".join(addInstall)
     print(runString)
     while True:
         inp = input("Continue with this? (y/n)").lower()
