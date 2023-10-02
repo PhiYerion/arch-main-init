@@ -13,13 +13,14 @@ fi
 imageFile="$BASE_DIR/imagefile.img"
 socket=127.0.0.1:18901
 
-qemu-img create -f qcow "$imageFile" 12G
+qemu-img create -f raw "$imageFile" 32G
 
 qemu-system-x86_64 -enable-kvm \
 	-cdrom $archiso \
 	-boot order=d \
-	-drive file=$imageFile,format=qcow \
-	-m 4G \
+	-drive file=$imageFile,format=raw \
+	-m 12G \
+	-smp 4 \
 	-vga virtio \
 	-monitor telnet:$socket,server,nowait \
 	-net user,hostfwd=tcp::10022-:22 \
@@ -69,5 +70,5 @@ cmd() {
 }
 
 sleep 1
-cmd "passwd\arch\arch\systemctl start sshd\parted -s /dev/sda mklabel gpt\parted -s /dev/sda mkpart primary ext4 1mib 512mib\parted -s /dev/sda mkpart primary btrfs 512mib 100%\sed -i 's/Required DatabaseOptional/Never/g' /etc/pacman.conf\mkfs.vfat -F32 /dev/sda1;mkfs.btrfs /dev/sda2;mount --mkdir /dev/sda2 /mnt;mount --mkdir /dev/sda1 /mnt/boot;pacman -Sy git; git clone https://github.com/phiyerion/arch-main-init; cd arch-main-init; git checkout $BRANCH; git branch $BRANCH; ./install.py" \
+cmd "passwd\arch\arch\systemctl start sshd\parted -s /dev/sda mklabel gpt\parted -s /dev/sda mkpart primary ext4 1mib 512mib\parted -s /dev/sda mkpart primary ext4 512mib 100%\sed -i 's/Required DatabaseOptional/Never/g' /etc/pacman.conf\mkfs.vfat -F32 /dev/sda1;mkfs.ext4 /dev/sda2;mount --mkdir /dev/sda2 /mnt;mount --mkdir /dev/sda1 /mnt/boot;pacman -Sy git; git clone https://github.com/phiyerion/arch-main-init; cd arch-main-init; git checkout $BRANCH; git branch $BRANCH; ./install.py" \
 	| nc 127.0.0.1 18901

@@ -24,7 +24,7 @@ def main():
                 confirm = "n" not in inp
         else:
             if debug:
-                confirm = True
+                confirm = False
             else:
                 inp = input(prompt + " (y/N): ").lower()
                 confirm = "y" in inp
