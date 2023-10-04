@@ -1,21 +1,27 @@
 #!/bin/bash
 
 BRANCH="DejaVOS"
-BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
-mkdir "$BASE_DIR/DejaVOS"
+WD="$(cd "$(dirname "$0")" && pwd)/DejaVOS"
+mkdir $WD
+cd $WD
 archiso=`find /home -regex '.*archlinux.*iso$' -print -quit`
 
 if [[ $archiso == "" ]]; then
 	echo "No archlinux iso found. Download archiso somewhere under /home first."
 	exit
 fi
+echo "Arch found at $archiso"
 
-imageFile="$BASE_DIR/imagefile.img"
+imageFile="$WD/imagefile.img"
 socket=127.0.0.1:18901
 
-qemu-img create -f raw "$imageFile" 32G
+qemu-img create -f raw $imageFile 32G
+cp /usr/share/edk2-ovmf/x64/OVMF.fd $WD/OVMF.fd
+chmod +rw $WD/OVMF.fd
 
-qemu-system-x86_64 -enable-kvm \
+qemu-system-x86_64 \
+	-enable-kvm \
+	-drive if=pflash,format=raw,file=$WD/OVMF.fd \
 	-cdrom $archiso \
 	-boot order=d \
 	-drive file=$imageFile,format=raw \
@@ -28,9 +34,11 @@ qemu-system-x86_64 -enable-kvm \
 	&
 
 cmd() {
-	sleep 0.2
-	for ((i=0;i<20;i++)); do 
+	sleep 3
+	for ((i=0;i<100;i++)); do 
 		echo "sendkey ctrl-m"
+		echo "sendkey ret"
+		echo "sendkey spc"
 		sleep 0.1
 	done
 	sleep 25
@@ -69,6 +77,6 @@ cmd() {
 	echo "sendkey ctrl-m"
 }
 
-sleep 1
-cmd "passwd\arch\arch\systemctl start sshd\parted -s /dev/sda mklabel gpt\parted -s /dev/sda mkpart primary ext4 1mib 512mib\parted -s /dev/sda mkpart primary ext4 512mib 100%\sed -i 's/Required DatabaseOptional/Never/g' /etc/pacman.conf\mkfs.vfat -F32 /dev/sda1;mkfs.ext4 /dev/sda2;mount --mkdir /dev/sda2 /mnt;mount --mkdir /dev/sda1 /mnt/boot;pacman -Sy git; git clone https://github.com/phiyerion/arch-main-init; cd arch-main-init; git checkout $BRANCH; git branch $BRANCH; ./install.py" \
+sleep 2
+cmd "passwd\arch\arch\systemctl start sshd\parted -s /dev/sda mklabel gpt\parted -s /dev/sda mkpart primary fat32 1mib 512mib\parted /dev/sda1 set 1 esp on\parted -s /dev/sda mkpart primary ext4 512mib 100%\sed -i 's/Required DatabaseOptional/Never/g' /etc/pacman.conf\mkfs.fat -F32 /dev/sda1;mkfs.ext4 /dev/sda2;mount --mkdir /dev/sda2 /mnt;mount --mkdir /dev/sda1 /mnt/boot;pacman -Sy git; git clone https://github.com/phiyerion/arch-main-init; cd arch-main-init; git checkout $BRANCH; git branch $BRANCH; ./install.py\\\\\\\\\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y" \
 	| nc 127.0.0.1 18901

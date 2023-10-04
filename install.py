@@ -156,7 +156,7 @@ def main():
             break
 
     # There is a lot of small things that need to be installed, so setting to 20 for that
-    sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 9/' /etc/pacman.conf", shell=True)
+    sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf", shell=True)
     # sp.run("echo 'DisableDownloadTimeout' >> /etc/pacman.conf", shell=True)
     print("starting the range")
     for i in range(10):
