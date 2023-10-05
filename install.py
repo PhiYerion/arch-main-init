@@ -11,7 +11,12 @@ def main():
     preCommands = str()
     commands = str()
     raid = False
-    sudo = True
+    
+    # ENV VARS
+    sudo = "sudo"
+    window_manager = ""
+    username = ""
+
     debug = input("debug?")[0] == "y"
     aur_install = ""
 
@@ -50,13 +55,14 @@ def main():
     commands += "echo '" + ("host" if debug else input("What would you like your hostname to be: ")) + "' > /etc/hostname;  "
 
     if input("Doas or Sudo (d/S): ").lower() not in "dD":
+        sudo = "sudo"
         commands += "sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers;"
         toInstall += " sudo "
     else:
+        sudo = "doas"
         toInstall += " doas "
         commands += "pacman -Rs sudo; rm /usr/bin/sudo; echo 'permit persist :wheel' > /etc/doas.conf; ln -s /usr/bin/doas /usr/bin/sudo;"
         f = open("postChroot.py", "a")
-        f.write("cmd('paru --sudo doas; pacman -Rs sudo;')\n")
         f.close()
 
     if pmt("Are you using mdadm/raid?", "mdadm", False):
@@ -95,7 +101,7 @@ def main():
             commands += " systemctl enable sddm;"
             if pmt("My selection of plasma tools and theme?", "khotkeys kpipewire kscreen kscreenlocker ksshaskpass plasma-disks libkscreen plasma-firewall plasma-nm plasma-pa plasma-systemmonitor plasma-vault plasma-workspace plasma-workspace-wallpapers powerdevil sddm-kcm systemsettings"):
                 aur_install += "candy-icons-git"
-                commands += "wget 'https://r4.wallpaperflare.com/wallpaper/906/970/555/digital-art-eclipse-clouds-berserk-wallpaper-c970584d01facd0b06a7688f9071767d.jpg' -O /home/user/Pictures/wallpaper.jpg; cd $(mktemp -d); git clone https://github.com/pwyde/monochrome-kde; cd monochrome-kde; ./install.sh -i; "
+                commands += f"wget 'https://r4.wallpaperflare.com/wallpaper/906/970/555/digital-art-eclipse-clouds-berserk-wallpaper-c970584d01facd0b06a7688f9071767d.jpg' -O /home/{username}/Pictures/wallpaper.jpg; cd $(mktemp -d); git clone https://github.com/pwyde/monochrome-kde; cd monochrome-kde; ./install.sh -i; "
             else: pmt("Plasma Minimal (plasma-desktop already done)?", "bluedevil drkonqi discover kde-gtk-config khotkeys kpipewire kscreen kscreenlocker ksshaskpass plasma-browser-integration plasma-disks libkscreen plasma-firewall plasma-nm plasma-pa plasma-systemmonitor plasma-vault plasma-workspace plasma-workspace-wallpapers powerdevil sddm-kcm systemsettings konsole")
             
             pmt("Plasma group?", "plasma")
@@ -111,6 +117,8 @@ def main():
             preCommands += "mv ./hyprland.conf /mnt/root/hyprland.conf"
             commands += f"mkdir --parents /home/{username}/.config/hypr"
             commands += f"mv /root/hyprland.conf /home/{username}/.config/hypr/hyprland.conf"
+        elif pmt("dwm", "xfce4-panel"):
+            print("There will be a custom dwm installed")
         else:
             print("Good luck on that.")
         pmt("Basic apps and tools for desktop?", "xdg-utils dolphin filelight")
@@ -146,7 +154,7 @@ def main():
         toInstall += " mesa AMDGPU"
 
 
-    runString = "pacstrap -K /mnt " + toInstall + " ".join(addInstall)
+    runString = "pacstrap --disable-download-timeout -K /mnt " + toInstall + " ".join(addInstall)
     print(runString)
     while True:
         inp = input("Continue with this? (y/n)").lower()
@@ -157,7 +165,7 @@ def main():
 
     # There is a lot of small things that need to be installed, so setting to 20 for that
     sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf", shell=True)
-    # sp.run("echo 'DisableDownloadTimeout' >> /etc/pacman.conf", shell=True)
+    sp.run("sed -i -e 's/\[options\]/\[options\]\nDisableDownloadTimeout/ /etc/pacman.conf", shell=True)
     print("starting the range")
     for i in range(10):
         try:
@@ -178,7 +186,7 @@ def main():
     f = open("/mnt/root/arch-main-init/phase2.sh", "a")
     f.write(commands)
     f.close()
-    cmd(f"genfstab -U /mnt >> /mnt/etc/fstab; arch-chroot /mnt bash -c 'export NEW_USERNAME=\"{username}\"; /root/arch-main-init/postChroot.py'")
+    cmd(f"genfstab -U /mnt >> /mnt/etc/fstab; arch-chroot /mnt bash -c 'export NEW_USERNAME=\"{username}; export SUDO=\"{sudo}\"; export WINDOW_MANAGER=\"{window_manager}\"; /root/arch-main-init/postChroot.py'")
     # Chrooted
 
 main()
