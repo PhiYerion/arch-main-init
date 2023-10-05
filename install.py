@@ -187,7 +187,7 @@ def main():
     f.write(commands)
     f.close()
     print("chrooting...")
-    cmd(f"genfstab -U /mnt >> /mnt/etc/fstab; arch-chroot /mnt bash -c 'export NEW_USERNAME=\"{username}; export SUDO=\"{sudo}\"; export WINDOW_MANAGER=\"{window_manager}\"; /root/arch-main-init/postChroot.py'")
+    cmd(f"genfstab -U /mnt >> /mnt/etc/fstab; arch-chroot /mnt bash -c 'export NEW_USERNAME=\"{username}\"; export SUDO=\"{sudo}\"; export WINDOW_MANAGER=\"{window_manager}\"; /root/arch-main-init/postChroot.py'")
     # Chrooted
 
 main()
