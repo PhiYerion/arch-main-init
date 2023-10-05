@@ -134,10 +134,11 @@ def main():
     if "yY" in input("Nerd-Fonts? (y/N): ").lower():
         commands += "wget https://raw.githubusercontent.com/PhiYerion/get-nerd-fonts/main/test.py; ./test.py"
 
-    if not pmt("Nushell?", "nushell kitty"):
-        if pmt("ZSH for humans?", "zsh"):
-            commands += "if command -v curl >/dev/null 2>&1; then sh -c '$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)';\
-            else sh -c '$(wget -O- https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)'; fi;"
+    if pmt("Nushell?", "nushell kitty"):
+        commands += "chsh /bin/nu"
+    elif pmt("ZSH for humans?", "zsh"):
+        commands += "if command -v curl >/dev/null 2>&1; then sh -c '$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)';\
+        else sh -c '$(wget -O- https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)'; fi;"
 
     for s in ["cups", "flatpak"]:
         pmt(s, "", True, True)
