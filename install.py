@@ -5,7 +5,7 @@ import time
 
 def main():
     # Rustup is for paru, which is the only option at this moment.
-    toInstall = "bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector python cronie rustup"
+    toInstall = "dhcpcd bash-completion dosfstools linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector python cronie rustup"
     toInstall += " libtool gcc binutils autoconf automake bison file findutils debugedit fakeroot flex libisl libmpc m4 make pkgconf archlinux-keyring rsync patch gettext grep groff pacman texinfo which"   # this instead of base-devel
     addInstall = []
     preCommands = str()
@@ -98,6 +98,7 @@ def main():
 
     if pmt("Do you want a desktop?)", "xorg xorg-xinit pulseaudio alsa-utils pipewire pipewire-jack piper"):
         if pmt("KDE+Xorg+Wayland support? (Other option is Hyprland + Wayland)", "sddm plasma-desktop plasma-wayland-session"):
+            window_manager = "plasma"
             commands += " systemctl enable sddm;"
             if pmt("My selection of plasma tools and theme?", "khotkeys kpipewire kscreen kscreenlocker ksshaskpass plasma-disks libkscreen plasma-firewall plasma-nm plasma-pa plasma-systemmonitor plasma-vault plasma-workspace plasma-workspace-wallpapers powerdevil sddm-kcm systemsettings"):
                 aur_install += "candy-icons-git"
@@ -108,6 +109,8 @@ def main():
 
             pmt("Plasma Applications?", " kde-applications")
         elif pmt("Hyprland", "hyprpaper waybar xorg-xwayland qt6-wayland qt5-wayland libva gtk-layer-shell egl-wayland kitty"):
+            window_manager = "hyprland"
+
             if pmt("nvidia?", "wlroots-nvidia-git hyprland-nvidia"):
                 commands += f"echo 'env = XCURSOR_SIZE,24\nenv = LIBVA_DRIVERNAME,nvidia\nenv = XDG_SESSION_TYPE,wayland\nenv = GBM_BACKEND,nvidia-drm\nenv = __GLX_VENDOR_LIBRARY_NAME,nvidia\nenv = WLR_NO_HARDWARE_CURSORS,1\
                 >> /home/{username}/.config/hypr/hyprland.conf'"
@@ -117,7 +120,8 @@ def main():
             preCommands += "mv ./hyprland.conf /mnt/root/hyprland.conf"
             commands += f"mkdir --parents /home/{username}/.config/hypr"
             commands += f"mv /root/hyprland.conf /home/{username}/.config/hypr/hyprland.conf"
-        elif pmt("dwm", "xfce4-panel"):
+        elif pmt("dwm", "xfce4-panel feh xcompmgr"):
+            window_manager = "dwm"
             print("There will be a custom dwm installed")
         else:
             print("Good luck on that.")
@@ -165,7 +169,7 @@ def main():
 
     # There is a lot of small things that need to be installed, so setting to 20 for that
     sp.run("sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf", shell=True)
-    sp.run("sed -i -e 's/\[options\]/\[options\]\nDisableDownloadTimeout/' /etc/pacman.conf", shell=True)
+    sp.run("sed -i -e 's/\[options\]/\[options\]\\nDisableDownloadTimeout/' /etc/pacman.conf", shell=True)
     print("starting the range")
     for i in range(10):
         try:

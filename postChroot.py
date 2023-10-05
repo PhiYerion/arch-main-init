@@ -18,6 +18,7 @@ cmd('bash /root/arch-main-init/phase2.sh')
 cmd("rustup default stable", True)
 cmd(f'git clone https://aur.archlinux.org/paru.git /home/{username}/paru; cd /home/{username}/paru; makepkg -si;', True)
 if os.environ.get('WINDOW_MANAGER') == 'dwm':
-    cmd('/root/arch-main-init/dwm_install.sh', True)
+    cmd(f'cp /root/arch-main-init/dwm_install.sh /home/{username}/dwm_install.sh; chown {username}:{username} /home/{username}/dwm_install.sh')
+    cmd(f'/home/{username}/dwm_install.sh', True)
 
 print("time to reboot")
