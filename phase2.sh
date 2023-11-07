@@ -24,7 +24,8 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 echo "127.0.0.1 localhost\n::1       localhost" > /etc/hosts
 echo "nameserver 1.1.1.1" > /etc/resolv.conf
-reflector -c US -a 6 --sort rate --save /etc/pacman.d/mirrorlist
+#reflector -c US --age 12 --protocol https -a 6 --sort rate --save /etc/pacman.d/mirrorlist
+echo 'Server = http://10.0.15.2/arch-repo/$repo/os/$arch' > /etc/pacman.d/mirrorlist
 ssh-keygen
 ssh-keygen -t ed25519
 
