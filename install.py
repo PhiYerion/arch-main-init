@@ -21,7 +21,7 @@ class Handler:
     def __init__(self):
         baseInstall = "bash-completion linux linux-firmware linux-headers base vim vi grub git reflector"
         # this instead of base-devel
-        basicRequired = " libtool gcc binutils autoconf automake bison file findutils debugedit fakeroot flex libisl libmpc m4 make pkgconf archlinux-keyring rsync patch gettext grep groff pacman texinfo which gzip"
+        basicRequired = " libtool gcc binutils autoconf automake bison file findutils debugedit fakeroot flex libisl libmpc m4 make pkgconf archlinux-keyring rsync patch gettext grep groff pacman texinfo which gzip xdg-user-dirs"
         basicPackages = "dhcpcd dosfstools cronie rustup python plocate"
 
         self.commands = str()
