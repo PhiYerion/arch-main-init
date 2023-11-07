@@ -250,6 +250,24 @@ class Handler:
 
 def main():
     handler = Handler()
+    handler.getUser()
+    handler.getAuthPackage()
+    handler.hardware()
+
+    # dmidecode --type 3 | grep Type | sed 's/.* //'
+    if handler.pmt("Laptop?"):
+        handler.laptop()
+
+    if handler.pmt("Server?"):
+        handler.server()
+    else:
+        handler.windowManager()
+
+    handler.firewall()
+    handler.getRaid()
+    handler.miscTools()
+    handler.cybersec()
+    handler.personalConfig()
 
     handler.cmd("timedatectl set-ntp true")
 
