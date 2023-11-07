@@ -282,17 +282,14 @@ def main():
             break
 
     # There is a lot of small things that need to be installed, so setting to 20 for that
-    sp.run(
-        "echo 'Server = 'http://10.0.2.2/arch-repo/$repo/os/$arch' > /etc/pacman.d/mirrorlist",
-        shell=True,
+    handler.cmd(
+        "echo 'Server = 'http://10.0.2.2/arch-repo/$repo/os/$arch' > /etc/pacman.d/mirrorlist"
     )
-    sp.run(
-        "sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf",
-        shell=True,
+    handler.cmd(
+        "sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf"
     )
-    sp.run(
-        "sed -i -e 's/\[options\]/\[options\]\\nDisableDownloadTimeout/' /etc/pacman.conf",
-        shell=True,
+    handler.cmd(
+        "sed -i -e 's/\[options\]/\[options\]\\nDisableDownloadTimeout/' /etc/pacman.conf"
     )
     print("starting the range")
     for i in range(10):
