@@ -53,7 +53,7 @@ class Handler:
 
         if confirm:
             if b_install:
-                self.toInstall = " " + prompt
+                self.toInstall += " " + prompt
             else:
                 if len(toInstall) > 0:  # jank
                     self.toInstall += " " + toInstall
@@ -95,8 +95,8 @@ class Handler:
             self.toInstall += " sudo "
         else:
             self.sudo = "doas"
-            self.toInstall = " doas "
-            self.commands = "pacman -Rs sudo; rm /usr/bin/sudo; echo 'permit persist :wheel' > /etc/doas.conf; ln -s /usr/bin/doas /usr/bin/sudo;"
+            self.toInstall += " doas "
+            self.commands += "pacman -Rs sudo; rm /usr/bin/sudo; echo 'permit persist :wheel' > /etc/doas.conf; ln -s /usr/bin/doas /usr/bin/sudo;"
 
     ###### SYS CONFIG ######
 
