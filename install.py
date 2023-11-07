@@ -146,7 +146,7 @@ class Handler:
                 " radare2 zaproxy wireshark-qt hashcat nmap lynis wpscan aircrack-ng hydra sqlmap "
                 + metasploit
             )
-            self.commands += f"curl -L get.rvm.io > rvm-install; sudo bash < ./rvm-install; rm -f ./rvm-install; usermod {self.username} -aG rvm; source ~/.rvm/scripts/rvm; cd /opt/metasploit; rvm install {msRubyVersion}; gem install bunder; bundle install; cd; sudo -u user initdb -D /var/lib/postgres/data; systemctl start postgresql; msfdb init --connection-string=postgresql://postgres@localhost:5432/postgres; "
+            self.commands += f"curl -L get.rvm.io > rvm-install; sudo bash < ./rvm-install; rm -f ./rvm-install; usermod {self.username} -aG rvm; source ~/.rvm/scripts/rvm; cd /opt/metasploit; rvm install {msRubyVersion}; runuser -u {username} gem install bunder; runuser -u {username} bundle install; cd; runuser -u {username} initdb -D /var/lib/postgres/data; systemctl start postgresql; msfdb init --connection-string=postgresql://postgres@localhost:5432/postgres; "
 
     ###### PERSONAL CONFIG ######
 
@@ -283,7 +283,7 @@ def main():
 
     # There is a lot of small things that need to be installed, so setting to 20 for that
     handler.cmd(
-        "echo 'Server = 'http://10.0.2.2/arch-repo/$repo/os/$arch' > /etc/pacman.d/mirrorlist"
+        "echo 'Server = http://10.0.2.2/arch-repo/$repo/os/$arch' > /etc/pacman.d/mirrorlist"
     )
     handler.cmd(
         "sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf"
