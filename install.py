@@ -19,7 +19,7 @@ class Handler:
     debug: bool
 
     def __init__(self):
-        baseInstall = "bash-completion linux linux-firmware linux-headers base vim vi grub git reflector"
+        baseInstall = "bash-completion linux linux-firmware linux-headers base vim vi grub efibootmgr git reflector"
         # this instead of base-devel
         basicRequired = " libtool gcc binutils autoconf automake bison file findutils debugedit fakeroot flex libisl libmpc m4 make pkgconf archlinux-keyring rsync patch gettext grep groff pacman texinfo which gzip xdg-user-dirs"
         basicPackages = "dhcpcd dosfstools cronie rustup python plocate"
@@ -147,7 +147,7 @@ class Handler:
                 " radare2 zaproxy wireshark-qt hashcat nmap lynis wpscan aircrack-ng hydra sqlmap "
                 + metasploit
             )
-            self.commands += f"curl -L get.rvm.io > rvm-install; sudo bash < ./rvm-install; rm -f ./rvm-install; usermod {self.username} -aG rvm; source ~/.rvm/scripts/rvm; cd /opt/metasploit; rvm install {msRubyVersion}; runuser -u {self.username} -c 'gem install bunder'; runuser -u {self.username} -c 'bundle install'; cd; runuser -u {self.username} -c 'initdb -D /var/lib/postgres/data'; systemctl start postgresql; msfdb init --connection-string=postgresql://postgres@localhost:5432/postgres; "
+            self.commands += f"curl -L get.rvm.io > rvm-install; sudo bash < ./rvm-install; rm -f ./rvm-install; usermod {self.username} -aG rvm; source ~/.rvm/scripts/rvm; cd /opt/metasploit; rvm install {msRubyVersion}; runuser {self.username} -c 'gem install bunder'; runuser {self.username} -c 'bundle install'; cd; runuser {self.username} -c 'initdb -D /var/lib/postgres/data'; systemctl start postgresql; msfdb init --connection-string=postgresql://postgres@localhost:5432/postgres; "
 
     ###### PERSONAL CONFIG ######
 

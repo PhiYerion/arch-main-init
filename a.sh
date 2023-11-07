@@ -25,8 +25,8 @@ qemu-system-x86_64 \
 	-boot order=d \
 	-drive file="$imageFile",format=raw \
 	-m 12G
-	#-smp 4 \
-	#-vga virtio \
-	#-monitor telnet:$socket,server,nowait \
-	#-net user,hostfwd=tcp::10022-:22 \
-	#-net nic
+	-smp 4 \
+	-vga virtio \
+	-monitor telnet:$socket,server,nowait \
+	-net user,hostfwd=tcp::10022-:22 \
+	-net nic

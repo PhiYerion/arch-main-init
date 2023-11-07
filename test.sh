@@ -15,6 +15,7 @@ echo "Arch found at $archiso"
 imageFile="$WD/imagefile.img"
 socket=127.0.0.1:18901
 
+sudo rm -f "$imageFile"
 qemu-img create -f raw "$imageFile" 32G
 cp /usr/share/edk2-ovmf/x64/OVMF.fd "$WD"/OVMF.fd
 chmod +rw "$WD"/OVMF.fd
