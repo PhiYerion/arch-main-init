@@ -64,6 +64,12 @@ cmd() {
 			char="shift-${char,,}"
 		elif [[ $char == "*" ]]; then
 			char="shift-8"
+		elif [[ $char == '>' ]]; then
+			char="shift-dot"
+		elif [[ $char == '=' ]]; then
+			char='equal'
+		elif [[ $char == '$' ]]; then
+			char='shift-4'
 		elif [[ $char == "\\" ]]; then
 			char="ctrl-m"
 			echo "sendkey $char"
@@ -78,5 +84,5 @@ cmd() {
 }
 
 sleep 2
-cmd "echo 'Server = http://10.0.15.2/arch-repo/$repo/os/$arch' > /etc/pacman.d/mirrorlist\passwd\arch\arch\systemctl start sshd\parted -s /dev/sda mklabel gpt\parted -s /dev/sda mkpart primary fat32 1mib 512mib\parted -s /dev/sda mkpart primary ext4 512mib 100%\parted /dev/sda set 1 esp on\sed -i 's/Required DatabaseOptional/Never/g' /etc/pacman.conf\mkfs.fat -F32 /dev/sda1;mkfs.ext4 /dev/sda2;mount --mkdir /dev/sda2 /mnt;mount --mkdir /dev/sda1 /mnt/boot;pacman -Sy git; git clone https://github.com/phiyerion/arch-main-init; cd arch-main-init; git checkout $BRANCH; git branch $BRANCH; ./install.py\n\n\n\n\n\n\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y" \
+cmd "echo 'Server = http://10.0.2.2/arch-repo/\$repo/os/\$arch' > /etc/pacman.d/mirrorlist\passwd\arch\arch\systemctl start sshd\parted -s /dev/sda mklabel gpt\parted -s /dev/sda mkpart primary fat32 1mib 512mib\parted -s /dev/sda mkpart primary ext4 512mib 100%\parted /dev/sda set 1 esp on\sed -i 's/Required DatabaseOptional/Never/g' /etc/pacman.conf\mkfs.fat -F32 /dev/sda1;mkfs.ext4 /dev/sda2;mount --mkdir /dev/sda2 /mnt;mount --mkdir /dev/sda1 /mnt/boot;pacman -Sy git; git clone https://github.com/phiyerion/arch-main-init; cd arch-main-init; git checkout $BRANCH; git branch $BRANCH; ./install.py\n\n\n\n\n\n\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y\y" \
 	| nc 127.0.0.1 18901

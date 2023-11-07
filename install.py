@@ -265,7 +265,7 @@ def main():
 
     # There is a lot of small things that need to be installed, so setting to 20 for that
     sp.run(
-        "echo 'Server = 'http://10.0.15.2/arch-repo/$repo/os/$arch' > /etc/pacman.d/mirrorlist",
+        "echo 'Server = 'http://10.0.2.2/arch-repo/$repo/os/$arch' > /etc/pacman.d/mirrorlist",
         shell=True,
     )
     sp.run(
