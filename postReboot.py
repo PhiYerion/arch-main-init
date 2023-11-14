@@ -30,7 +30,7 @@ def main():
 
     if pmt("Games/Emulation? (Wine, proton, steam, lutris)"):
         cmd("sed -zi 's/#\[multilib\]\n#/\[multilib\]\n/)' /etc/pacman.conf")
-        cmd('pacman -Sy ttf-liberation lib32-systemd wine wine-gecko wine-mono lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-pipewire pipewire-pulse lib32-libpulse flatpak;\
+        cmd('pacman -Sy ttf-liberation lib32-systemd wine wine-gecko wine-mono winetricks protontricks lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-pipewire pipewire-pulse lib32-libpulse flatpak;\
             pacman -Syuu')
         if pmt("Nvidia?"):
             cmd('pacman -S lib32-nvidia-utils')
