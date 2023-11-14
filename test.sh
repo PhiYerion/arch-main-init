@@ -1,24 +1,31 @@
 #!/bin/bash
 
 BRANCH="DejaVOS"
-BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
-mkdir "$BASE_DIR/DejaVOS"
-archiso=`find /home -regex '.*archlinux.*iso$' -print -quit`
+WD="$(cd "$(dirname "$0")" && pwd)/DejaVOS"
+mkdir "$WD"
+cd "$WD" || exit
+archiso=$( find /home -regex '.*archlinux.*iso$' -print -quit )
 
 if [[ $archiso == "" ]]; then
 	echo "No archlinux iso found. Download archiso somewhere under /home first."
 	exit
 fi
+echo "Arch found at $archiso"
 
-imageFile="$BASE_DIR/imagefile.img"
+imageFile="$WD/imagefile.img"
 socket=127.0.0.1:18901
 
+sudo rm -f "$imageFile"
 qemu-img create -f raw "$imageFile" 32G
+cp /usr/share/edk2-ovmf/x64/OVMF.fd "$WD"/OVMF.fd
+chmod +rw "$WD"/OVMF.fd
 
-qemu-system-x86_64 -enable-kvm \
-	-cdrom $archiso \
+qemu-system-x86_64 \
+	-enable-kvm \
+	-drive if=pflash,format=raw,file="$WD"/OVMF.fd \
+	-cdrom "$archiso" \
 	-boot order=d \
-	-drive file=$imageFile,format=raw \
+	-drive file="$imageFile",format=raw \
 	-m 12G \
 	-smp 4 \
 	-vga virtio \
@@ -28,9 +35,11 @@ qemu-system-x86_64 -enable-kvm \
 	&
 
 cmd() {
-	sleep 0.2
-	for ((i=0;i<20;i++)); do 
+	sleep 3
+	for ((i=0;i<100;i++)); do 
 		echo "sendkey ctrl-m"
+		echo "sendkey ret"
+		echo "sendkey spc"
 		sleep 0.1
 	done
 	sleep 25
@@ -56,6 +65,12 @@ cmd() {
 			char="shift-${char,,}"
 		elif [[ $char == "*" ]]; then
 			char="shift-8"
+		elif [[ $char == '>' ]]; then
+			char="shift-dot"
+		elif [[ $char == '=' ]]; then
+			char='equal'
+		elif [[ $char == '$' ]]; then
+			char='shift-4'
 		elif [[ $char == "\\" ]]; then
 			char="ctrl-m"
 			echo "sendkey $char"
@@ -69,6 +84,6 @@ cmd() {
 	echo "sendkey ctrl-m"
 }
 
-sleep 1
-cmd "passwd\arch\arch\systemctl start sshd\parted -s /dev/sda mklabel gpt\parted -s /dev/sda mkpart primary ext4 1mib 512mib\parted -s /dev/sda mkpart primary ext4 512mib 100%\sed -i 's/Required DatabaseOptional/Never/g' /etc/pacman.conf\mkfs.vfat -F32 /dev/sda1;mkfs.ext4 /dev/sda2;mount --mkdir /dev/sda2 /mnt;mount --mkdir /dev/sda1 /mnt/boot;pacman -Sy git; git clone https://github.com/phiyerion/arch-main-init; cd arch-main-init; git checkout $BRANCH; git branch $BRANCH; ./install.py" \
+sleep 2
+cmd "echo 'Server = http://10.0.2.2/arch-repo/\$repo/os/\$arch' > /etc/pacman.d/mirrorlist\passwd\arch\arch\systemctl start sshd\parted -s /dev/sda mklabel gpt\parted -s /dev/sda mkpart primary fat32 1mib 512mib\parted -s /dev/sda mkpart primary ext4 512mib 100%\parted /dev/sda set 1 esp on\sed -i 's/Required DatabaseOptional/Never/g' /etc/pacman.conf\mkfs.fat -F32 /dev/sda1;mkfs.ext4 /dev/sda2;mount --mkdir /dev/sda2 /mnt;mount --mkdir /dev/sda1 /mnt/boot;pacman -Sy git; git clone https://github.com/phiyerion/arch-main-init; cd arch-main-init; git checkout $BRANCH; git branch $BRANCH; ./install.py\n\n\n" \
 	| nc 127.0.0.1 18901

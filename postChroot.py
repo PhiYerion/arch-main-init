@@ -16,7 +16,9 @@ cmd('pacman-key --init; pacman-key --populate archlinux; pacman -Syuu')
 cmd('chmod +x /root/arch-main-init/phase2.sh')
 cmd('bash /root/arch-main-init/phase2.sh')
 cmd("rustup default stable", True)
-cmd('git clone https://aur.archlinux.org/paru.git /home/user/paru; cd /home/user/paru; makepkg -si;', True)
-#cmd("paru --sudo doas; pacman -Rs sudo;")
+cmd(f'git clone https://aur.archlinux.org/paru.git /home/{username}/paru; cd /home/{username}/paru; makepkg -si;', True)
+if os.environ.get('WINDOW_MANAGER') == 'dwm':
+    cmd(f'cp /root/arch-main-init/dwm_install.sh /home/{username}/dwm_install.sh; chown {username}:{username} /home/{username}/dwm_install.sh')
+    cmd(f'/home/{username}/dwm_install.sh', True)
 
 print("time to reboot")

@@ -9,3 +9,7 @@ Cleaning:
 pacman -Sc (cache clearing)
 
 Considering the size of flatpak, it may be worth it to highly compress these files.
+
+
+# Test.sh dependencies:
+qemu, current arch linux iso, OVMF
