@@ -144,7 +144,7 @@ class Handler:
             metasploit = " metasploit postgresql  "
             self.aur_install = "skipfish"
             self.toInstall += (
-                " maltego radare2 zaproxy wireshark-qt hashcat nmap lynis wpscan aircrack-ng hydra sqlmap nikto yersinia"
+                "  radare2 zaproxy wireshark-qt hashcat nmap lynis wpscan aircrack-ng hydra sqlmap nikto "
                 + metasploit
             )
             self.commands += "curl -L get.rvm.io > rvm-install;" \
