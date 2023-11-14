@@ -144,10 +144,20 @@ class Handler:
             metasploit = " metasploit postgresql  "
             self.aur_install = "skipfish"
             self.toInstall += (
-                " radare2 zaproxy wireshark-qt hashcat nmap lynis wpscan aircrack-ng hydra sqlmap "
+                " maltego radare2 zaproxy wireshark-qt hashcat nmap lynis wpscan aircrack-ng hydra sqlmap nikto yersinia"
                 + metasploit
             )
-            self.commands += f"curl -L get.rvm.io > rvm-install; sudo bash < ./rvm-install; rm -f ./rvm-install; usermod {self.username} -aG rvm; source ~/.rvm/scripts/rvm; cd /opt/metasploit; rvm install {msRubyVersion}; runuser {self.username} -c 'gem install bunder'; runuser {self.username} -c 'bundle install'; cd; runuser {self.username} -c 'initdb -D /var/lib/postgres/data'; systemctl start postgresql; msfdb init --connection-string=postgresql://postgres@localhost:5432/postgres; "
+            self.commands += "curl -L get.rvm.io > rvm-install;" \
+                           + "sudo bash < ./rvm-install;" \
+                           + "rm -f ./rvm-install;" \
+                          + f"usermod {self.username} -aG rvm; " \
+                           + "source ~/.rvm/scripts/rvm; " \
+                          + f"cd /opt/metasploit; rvm install {msRubyVersion}; " \
+                          + f"runuser {self.username} -c 'gem install bunder'; " \
+                          + f"runuser {self.username} -c 'bundle install'; " \
+                          + f"cd; runuser {self.username} -c 'initdb -D /var/lib/postgres/data'; " \
+                           + "systemctl start postgresql; " \
+                           + "msfdb init --connection-string=postgresql://postgres@localhost:5432/postgres; "
 
     ###### PERSONAL CONFIG ######
 
@@ -283,9 +293,11 @@ def main():
             break
 
     # There is a lot of small things that need to be installed, so setting to 20 for that
-    handler.cmd(
-        "echo 'Server = http://10.0.2.2/arch-repo/$repo/os/$arch' > /etc/pacman.d/mirrorlist"
-    )
+    if handler.debug:
+        handler.cmd(
+            "echo 'Server = http://10.0.2.2/arch-repo/$repo/os/$arch' > /etc/pacman.d/mirrorlist"
+        )
+
     handler.cmd(
         "sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf"
     )
