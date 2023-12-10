@@ -9,3 +9,5 @@ Cleaning:
 pacman -Sc (cache clearing)
 
 Considering the size of flatpak, it may be worth it to highly compress these files.
+
+https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration
