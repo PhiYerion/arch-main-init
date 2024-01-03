@@ -120,7 +120,7 @@ class Handler:
         myTools = "xdg-user-dirs zellij dust nushell lynx wget vnstat tor openbsd-netcat python-pip cronie openssh wireguard-tools htop iotop"
         virtualMachines = "vde2 virt-manager qemu-full edk2-ovmf bridge-utils libvirt"
         self.pmt("Are you going to use ntfs?", "ntfs-3g")
-        self.pmt("Bluetooth?", "bluez bluez-utils")
+        self.pmt("Bluetooth?", "bluez bluez-utils pulseaudio-bluetooth")
         self.pmt("Wifi?", "wpa_supplicant")
 
         self.pmt("Virtual machines?", virtualMachines)
@@ -172,6 +172,7 @@ class Handler:
     ##### DEVICE TYPE AND HARDWARE ######
 
     def laptop(self):
+        self.toInstall += " sof-firmware "
         if self.pmt("Power Management?", "tlp tlp-rdw"):
             self.aur_install += "tlpui"
             self.commands += (
@@ -242,7 +243,7 @@ class Handler:
 
     def windowManager(self):
         self.toInstall += (
-            " xorg xorg-xinit pulseaudio alsa-utils pipewire pipewire-jack piper "
+            " xorg xorg-xinit pulseaudio pulseaudio-alsa pamixer pavucontrol alsa-utils pipewire pipewire-jack piper alsa-firmware "
         )
         if self.pmt("KDE+Xorg+Wayland support? (Other option is Hyprland + Wayland)"):
             self.kde()
@@ -280,7 +281,7 @@ def main():
     handler.cybersec()
     handler.personalConfig()
 
-    handler.cmd("timedatectl set-ntp true")
+    handler.cmd("timedatectl set-ntp true; archlinux-keyring-wkd-sync;")
 
     runString = "pacstrap -K /mnt " + handler.toInstall
     print(runString)
