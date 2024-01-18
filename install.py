@@ -123,7 +123,7 @@ class Handler:
         myTools = "xdg-user-dirs zellij dust nushell lynx wget vnstat tor openbsd-netcat python-pip cronie openssh wireguard-tools htop iotop"
         virtualMachines = "vde2 virt-manager qemu-full edk2-ovmf bridge-utils libvirt"
         self.pmt("Are you going to use ntfs?", "ntfs-3g")
-        self.pmt("Bluetooth?", "bluez bluez-utils")
+        self.pmt("Bluetooth?", "bluez bluez-utils pulseaudio-bluetooth")
         self.pmt("Wifi?", "wpa_supplicant")
 
         self.pmt("Virtual machines?", virtualMachines)
@@ -147,10 +147,20 @@ class Handler:
             metasploit = " metasploit postgresql  "
             self.aur_install = "skipfish"
             self.toInstall += (
-                " radare2 zaproxy wireshark-qt hashcat nmap lynis wpscan aircrack-ng hydra sqlmap "
+                "  radare2 zaproxy wireshark-qt hashcat nmap lynis wpscan aircrack-ng hydra sqlmap nikto "
                 + metasploit
             )
-            self.commands += f"curl -L get.rvm.io > rvm-install; sudo bash < ./rvm-install; rm -f ./rvm-install; usermod {self.username} -aG rvm; source ~/.rvm/scripts/rvm; cd /opt/metasploit; rvm install {msRubyVersion}; runuser {self.username} -c 'gem install bunder'; runuser {self.username} -c 'bundle install'; cd; runuser {self.username} -c 'initdb -D /var/lib/postgres/data'; systemctl start postgresql; msfdb init --connection-string=postgresql://postgres@localhost:5432/postgres; "
+            self.commands += "curl -L get.rvm.io > rvm-install;" \
+                           + "sudo bash < ./rvm-install;" \
+                           + "rm -f ./rvm-install;" \
+                          + f"usermod {self.username} -aG rvm; " \
+                           + "source ~/.rvm/scripts/rvm; " \
+                          + f"cd /opt/metasploit; rvm install {msRubyVersion}; " \
+                          + f"runuser {self.username} -c 'gem install bunder'; " \
+                          + f"runuser {self.username} -c 'bundle install'; " \
+                          + f"cd; runuser {self.username} -c 'initdb -D /var/lib/postgres/data'; " \
+                           + "systemctl start postgresql; " \
+                           + "msfdb init --connection-string=postgresql://postgres@localhost:5432/postgres; "
 
     ###### PERSONAL CONFIG ######
 
@@ -165,6 +175,7 @@ class Handler:
     ##### DEVICE TYPE AND HARDWARE ######
 
     def laptop(self):
+        self.toInstall += " sof-firmware "
         if self.pmt("Power Management?", "tlp tlp-rdw"):
             self.aur_install += "tlpui"
             self.commands += (
@@ -235,7 +246,7 @@ class Handler:
 
     def windowManager(self):
         self.toInstall += (
-            " xorg xorg-xinit pulseaudio alsa-utils pipewire pipewire-jack piper "
+            " xorg xorg-xinit pulseaudio pulseaudio-alsa pamixer pavucontrol alsa-utils pipewire pipewire-jack piper alsa-firmware "
         )
         if self.pmt("KDE+Xorg+Wayland support? (Other option is Hyprland + Wayland)"):
             self.kde()
@@ -273,7 +284,7 @@ def main():
     handler.cybersec()
     handler.personalConfig()
 
-    handler.cmd("timedatectl set-ntp true")
+    handler.cmd("timedatectl set-ntp true; archlinux-keyring-wkd-sync;")
 
     runString = "pacstrap -K /mnt " + handler.toInstall
     print(runString)
@@ -286,9 +297,11 @@ def main():
             break
 
     # There is a lot of small things that need to be installed, so setting to 20 for that
-    handler.cmd(
-        "echo 'Server = http://10.0.2.2/arch-repo/$repo/os/$arch' > /etc/pacman.d/mirrorlist"
-    )
+    if handler.debug:
+        handler.cmd(
+            "echo 'Server = http://10.0.2.2/arch-repo/$repo/os/$arch' > /etc/pacman.d/mirrorlist"
+        )
+
     handler.cmd(
         "sed -i -e 's/# Misc options/# Misc options\\nParallelDownloads = 20/' /etc/pacman.conf"
     )

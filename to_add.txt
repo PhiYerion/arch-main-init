@@ -1,3 +1,4 @@
 nvim + kickstart.nvim/init.lua
 owasp zap
 radare2
+https://www.volatilityfoundation.org/releases-vol3
