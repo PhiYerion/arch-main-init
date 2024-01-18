@@ -80,6 +80,9 @@ class Handler:
             )
             + "' > /etc/hostname;  "
         )
+        if self.debug:
+            return
+
         if self.pmt("Do you have a git account?"):
             self.commands += (
                 f"git config --global user.name {input('What is your username: ')}"
@@ -226,7 +229,7 @@ class Handler:
         )
 
     def dwm(self):
-        self.toInstall += "xfce4-panel feh xcompmgr"
+        self.toInstall += "xfce4-panel feh picom"
         self.window_manager = "dwm"
         print("There will be a custom dwm installed")
 
